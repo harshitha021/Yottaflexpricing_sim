@@ -1,0 +1,84 @@
+{
+  "max_promos_stacked": 2,
+  "max_total_discount_pct_of_base": 0.35,
+  "one_promo_per_stack_group": true,
+  "competitor_staleness_threshold_days": 7.0,
+  "decision_timestamp_local": "06:00:00",
+  "margin_definition": "(net_price - unit_cost) / net_price, net_price = base_price - all promo discounts",
+  "effective_floor": "max(price_floor_abs, ceil_to_cent(unit_cost / (1 - min_margin_pct)))",
+  "effective_ceiling": "max(price_ceiling, effective_floor)",
+  "max_step_change_pct_per_decision": 0.1,
+  "promo_application_order": "sorted by descending discount pct-equivalent then promo_id; percent applied sequentially, fixed amount subtracted",
+  "stale_definition": "decision_ts - observed_at > 7 days",
+  "gradient_history_years": 5,
+  "gradient_anchor_date": "2025-07-01",
+  "gradient_definition": "yoy_price_pct(y) = ref_price(y)/ref_price(y-1) - 1 over 2021..2025; price_cagr_5y = (ref_price(2025)/ref_price(2020))^(1/5) - 1",
+  "gradient_ref_price": "last_ref_price * (1 + price_cagr_5y) ^ ((decision_date - anchor_date)/365.25)",
+  "gradient_ceiling": "last_ref_price * (1 + max_yoy_price_pct + gradient_ceiling_tolerance)",
+  "gradient_ceiling_tolerance": 0.03,
+  "gradient_ceiling_applies": "applied ceiling = max(min(price_ceiling, gradient_ceiling), effective_floor) - the margin floor always wins",
+  "gradient_recovery_band": 0.03,
+  "gradient_recovery": "with no competitor/stock signal (or inside the competitor band), if base < gradient_ref_price*(1-band) move toward min(gradient_ref_price, the competitor price)",
+  "cost_gradient": "monthly cost drift mean = cost_cagr_5y / (12 * 0.30)",
+  "stock_age_fresh_max_days": 30,
+  "stock_age_normal_max_days": 60,
+  "stock_age_slow_max_days": 90,
+  "stock_age_definition": "FIFO: sales consume the oldest lot first; age = days since lot receipt. FRESH 0-30, NORMAL 31-60, SLOW_MOVING 61-90, AGED >90; a SKU's class is the class of its oldest lot still in stock",
+  "bundle_review_min_history_days": 7,
+  "bundle_review_cadence": "weekly review days (day index % 7 == 0) with at least bundle_review_min_history_days of demand history; bundles are valid from the next day",
+  "bundle_eligible_secondary_classes": [
+    "SLOW_MOVING",
+    "AGED"
+  ],
+  "bundle_min_secondary_aged_units": 5,
+  "bundle_high_demand_percentile": 0.75,
+  "bundle_min_daily_demand": 0.5,
+  "bundle_high_demand_definition": "mean demand_units of the previous min(30, day) days >= the category percentile among live SKUs, and >= bundle_min_daily_demand",
+  "bundle_complement_map": {
+    "Electronics": [
+      "Office"
+    ],
+    "Home & Kitchen": [
+      "Grocery"
+    ],
+    "Grocery": [
+      "Home & Kitchen"
+    ],
+    "Apparel": [
+      "Sports",
+      "Beauty"
+    ],
+    "Sports": [
+      "Apparel"
+    ],
+    "Beauty": [
+      "Apparel"
+    ],
+    "Toys": [
+      "Office"
+    ],
+    "Office": [
+      "Electronics"
+    ]
+  },
+  "bundle_complement_map_meaning": "primary (high-demand) category -> categories whose aged stock may be attached to it",
+  "bundle_max_secondary_to_primary_price_ratio": 1.25,
+  "bundle_min_component_stock": 10,
+  "bundle_stock_reserve_pct": 0.1,
+  "bundle_sellable_definition": "sellable = floor(on_hand_units x (1 - bundle_stock_reserve_pct)); the reserve is protected for regular sales; both components need >= bundle_min_component_stock",
+  "bundle_discount_min": 0.05,
+  "bundle_discount_max": 0.15,
+  "bundle_discount_slow_moving": 0.08,
+  "bundle_discount_aged": 0.12,
+  "bundle_discount_very_aged": 0.15,
+  "bundle_very_aged_days": 120,
+  "bundle_price": "(primary_unit_price + secondary_unit_price) x (1 - bundle_discount_pct), unit price = base_price on the review day",
+  "bundle_margin_definition": "(bundle_price - combined_cost) / bundle_price, combined_cost = unit costs of both SKUs in the valid_from month",
+  "bundle_required_margin": "max(min_margin_pct of primary, min_margin_pct of secondary)",
+  "bundle_floor_rule": "bundle_price >= effective_floor(primary) + effective_floor(secondary) (same floor as single-SKU price decisions)",
+  "bundle_validity_days": 14,
+  "bundle_review_cap_pct_of_skus": 0.03,
+  "bundle_max_per_primary_per_review": 3,
+  "bundle_rejection_order": "COMPONENT_DISCONTINUED, INSUFFICIENT_STOCK, DUPLICATE_ACTIVE_BUNDLE, BELOW_PRICE_FLOOR, BELOW_MIN_MARGIN",
+  "bundle_promotion_interaction": "bundle sales are a separate offer priced from base_price; they do not stack with promotions and never change PriceHistory / PriceDecision of either SKU"
+}

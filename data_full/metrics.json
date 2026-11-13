@@ -1,0 +1,155 @@
+{
+  "revenue": 63428104.67,
+  "gross_margin": 23408973.4,
+  "gross_margin_pct": 0.3691,
+  "units_sold": 1904270,
+  "promo_unit_share": 0.2576,
+  "stockout_sku_day_rate": 0.0267,
+  "lost_sales_unit_share": 0.0227,
+  "gradient_capped_decision_share": 0.0262,
+  "gradient_recovery_decisions": 22059,
+  "avg_base_vs_gradient_ref_index": 0.9569,
+  "avg_price_cagr_5y_by_category": {
+    "Apparel": 0.0334,
+    "Beauty": 0.0292,
+    "Electronics": 0.0189,
+    "Grocery": 0.0389,
+    "Home & Kitchen": 0.0283,
+    "Office": 0.029,
+    "Sports": 0.0241,
+    "Toys": 0.0243
+  },
+  "decisions": 137605,
+  "price_changed_share": 0.5379,
+  "decisions_by_reason": {
+    "HOLD_IN_COMP_BAND": 57096,
+    "COMP_MATCH_DOWN": 25883,
+    "GRADIENT_RECOVERY": 22059,
+    "COMP_RAISE": 12387,
+    "LOW_STOCK_MARKUP": 8784,
+    "COST_PASS_THROUGH": 5361,
+    "HOLD_NO_SIGNAL": 4812,
+    "OVERSTOCK_MARKDOWN": 701,
+    "HOLD_STALE_COMPETITOR": 511,
+    "CEILING_REPAIR": 8,
+    "FLOOR_REPAIR": 3
+  },
+  "promo_rejections_by_reason": {
+    "FLOOR_GUARDRAIL": 7990,
+    "MIN_STOCK": 5960,
+    "MAX_TOTAL_DISCOUNT": 3466,
+    "MARGIN_GUARDRAIL": 3343,
+    "EXCLUSIVE_WITH_OTHER": 952,
+    "SAME_GROUP": 820,
+    "MAX_STACK": 45,
+    "CONFLICT_PAIR": 10
+  },
+  "stale_competitor_obs_at_decision_share": 0.0057,
+  "guardrail_pass_rate_all_decisions": 0.99586,
+  "avg_net_price_vs_competitor_index": 0.96,
+  "bundles_evaluated": 1052,
+  "bundles_created": 605,
+  "bundles_active": 10,
+  "bundles_expired": 595,
+  "bundles_cancelled": 447,
+  "bundle_units_sold": 29127,
+  "bundle_component_units_sold": 58254,
+  "aged_inventory_units_cleared": 23278,
+  "bundle_revenue": 1757027.31,
+  "bundle_gross_profit": 592373.83,
+  "bundle_avg_discount_pct": 0.1542,
+  "bundle_planned_avg_margin_pct": 0.3288,
+  "bundle_realised_margin_pct": 0.3371,
+  "aged_units_first_day": 84130,
+  "aged_units_last_day": 19,
+  "aged_inventory_reduction_pct": 0.9998,
+  "aged_units_cleared_pct_of_first_day_aged": 0.2767,
+  "bundle_rejections_by_reason": {
+    "INSUFFICIENT_STOCK": 298,
+    "DUPLICATE_ACTIVE_BUNDLE": 79,
+    "BELOW_MIN_MARGIN": 36,
+    "BELOW_PRICE_FLOOR": 34
+  },
+  "stock_age_class_share": {
+    "FRESH": 0.6224,
+    "NORMAL": 0.2493,
+    "SLOW_MOVING": 0.0539,
+    "AGED": 0.0477,
+    "NO_STOCK": 0.0267
+  },
+  "anomaly_counts": {
+    "PRICE_CHANGE_WITHOUT_REASON": 736,
+    "PRICE_BELOW_FLOOR": 569,
+    "PRICE_ABOVE_GRADIENT_CEILING": 414,
+    "MARGIN_BEFORE_DISCOUNT": 158,
+    "STALE_OBSERVATION_AS_CURRENT": 136,
+    "PROMO_STACK_VIOLATION": 78,
+    "BUNDLE_BELOW_MARGIN": 47
+  },
+  "detector_scores": {
+    "PRICE_BELOW_FLOOR": {
+      "injected": 569,
+      "detected": 569,
+      "true_pos": 569,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "PROMO_STACK_VIOLATION": {
+      "injected": 78,
+      "detected": 78,
+      "true_pos": 78,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "STALE_OBSERVATION_AS_CURRENT": {
+      "injected": 136,
+      "detected": 136,
+      "true_pos": 136,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "MARGIN_BEFORE_DISCOUNT": {
+      "injected": 158,
+      "detected": 158,
+      "true_pos": 158,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "PRICE_CHANGE_WITHOUT_REASON": {
+      "injected": 736,
+      "detected": 736,
+      "true_pos": 736,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "PRICE_ABOVE_GRADIENT_CEILING": {
+      "injected": 414,
+      "detected": 414,
+      "true_pos": 414,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "BUNDLE_BELOW_MARGIN": {
+      "injected": 47,
+      "detected": 47,
+      "true_pos": 47,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    }
+  },
+  "eligibility_replay_agreement": 0.99447
+}

@@ -1,0 +1,213 @@
+{
+ "args": [
+  "--skus",
+  "500",
+  "--days",
+  "60",
+  "--promos",
+  "150",
+  "--seed",
+  "20261022",
+  "--sql"
+ ],
+ "files_compared": 28,
+ "all_identical": true,
+ "files": {
+  "annual_price_history.csv": {
+   "run1_sha256": "1e75730a9eb0eaf63f8818893428f239b795ae17da1d15b6629cb65d846411d0",
+   "run2_sha256": "1e75730a9eb0eaf63f8818893428f239b795ae17da1d15b6629cb65d846411d0",
+   "rows_run1": 2500,
+   "rows_run2": 2500,
+   "identical": true
+  },
+  "bundle_order.csv": {
+   "run1_sha256": "793502fe82053ef418247948e7385bf09f0b99ba1ac57bc119c3d40207319c1b",
+   "run2_sha256": "793502fe82053ef418247948e7385bf09f0b99ba1ac57bc119c3d40207319c1b",
+   "rows_run1": 248,
+   "rows_run2": 248,
+   "identical": true
+  },
+  "competitor_observation.csv": {
+   "run1_sha256": "03e91ca8832b7c6850324bd1a547b1acaab60353092c3ec12a2db11439481917",
+   "run2_sha256": "03e91ca8832b7c6850324bd1a547b1acaab60353092c3ec12a2db11439481917",
+   "rows_run1": 10133,
+   "rows_run2": 10133,
+   "identical": true
+  },
+  "cost_record.csv": {
+   "run1_sha256": "d2d2f691c33b71ec1e967efd51eded1be43a9706c3a782048f042af6b31e8c8a",
+   "run2_sha256": "d2d2f691c33b71ec1e967efd51eded1be43a9706c3a782048f042af6b31e8c8a",
+   "rows_run1": 1500,
+   "rows_run2": 1500,
+   "identical": true
+  },
+  "data_dictionary.json": {
+   "run1_sha256": "8d16fd11b98f102621955cdfcf91f0ae0b7f9a9565325693927dc77c1de6fb6c",
+   "run2_sha256": "8d16fd11b98f102621955cdfcf91f0ae0b7f9a9565325693927dc77c1de6fb6c",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "data_dictionary.md": {
+   "run1_sha256": "e3bb6078a5df65183bc91fb8ec4c32b1c6bc7975ec1d06d0619da6a876d4081e",
+   "run2_sha256": "e3bb6078a5df65183bc91fb8ec4c32b1c6bc7975ec1d06d0619da6a876d4081e",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "decision_promotion.csv": {
+   "run1_sha256": "d7b912b1aa42b4351d008843ab1a825f8c848b7a9e4d80f17a1eb9cf7fa892df",
+   "run2_sha256": "d7b912b1aa42b4351d008843ab1a825f8c848b7a9e4d80f17a1eb9cf7fa892df",
+   "rows_run1": 1676,
+   "rows_run2": 1676,
+   "identical": true
+  },
+  "generator_command.txt": {
+   "run1_sha256": "b44d8b117d17acf683747b513075649349f234c2db968767c1dfd1f4d6eab581",
+   "run2_sha256": "b44d8b117d17acf683747b513075649349f234c2db968767c1dfd1f4d6eab581",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "inventory_lot.csv": {
+   "run1_sha256": "f6aacb83134f19b4ed2ff5bcc2944bce67ce37d1e5be5d8516e6e931ac5bd304",
+   "run2_sha256": "f6aacb83134f19b4ed2ff5bcc2944bce67ce37d1e5be5d8516e6e931ac5bd304",
+   "rows_run1": 1305,
+   "rows_run2": 1305,
+   "identical": true
+  },
+  "inventory_snapshot.csv": {
+   "run1_sha256": "4b368b166de0c3ccd63f1d8f32b7f08999bdea1efa5fa32a2107c38c2ad458e0",
+   "run2_sha256": "4b368b166de0c3ccd63f1d8f32b7f08999bdea1efa5fa32a2107c38c2ad458e0",
+   "rows_run1": 29754,
+   "rows_run2": 29754,
+   "identical": true
+  },
+  "orders.csv": {
+   "run1_sha256": "fb72c46e832b555363802eae429abff95601ad2d6d3a372a56a4246b5ed249d6",
+   "run2_sha256": "fb72c46e832b555363802eae429abff95601ad2d6d3a372a56a4246b5ed249d6",
+   "rows_run1": 31698,
+   "rows_run2": 31698,
+   "identical": true
+  },
+  "price_decision.csv": {
+   "run1_sha256": "45ef5b1826fa7dbf335cafdc0ebaa15ac1c0e9828cdec90ec0c62ea026b49f2d",
+   "run2_sha256": "45ef5b1826fa7dbf335cafdc0ebaa15ac1c0e9828cdec90ec0c62ea026b49f2d",
+   "rows_run1": 4778,
+   "rows_run2": 4778,
+   "identical": true
+  },
+  "price_gradient.csv": {
+   "run1_sha256": "65deacac08b712652233495431cf2e5941257b3c3c1d958c7e887ef33107d3b2",
+   "run2_sha256": "65deacac08b712652233495431cf2e5941257b3c3c1d958c7e887ef33107d3b2",
+   "rows_run1": 500,
+   "rows_run2": 500,
+   "identical": true
+  },
+  "price_history.csv": {
+   "run1_sha256": "d786808cde583dc373a3279411d9f81ea932a7e198c909c95755af5885e1c891",
+   "run2_sha256": "d786808cde583dc373a3279411d9f81ea932a7e198c909c95755af5885e1c891",
+   "rows_run1": 29754,
+   "rows_run2": 29754,
+   "identical": true
+  },
+  "product.csv": {
+   "run1_sha256": "e81a7817e266320f746a15952524b53947c07491c41d9e45b6767aba9ac0f5b0",
+   "run2_sha256": "e81a7817e266320f746a15952524b53947c07491c41d9e45b6767aba9ac0f5b0",
+   "rows_run1": 500,
+   "rows_run2": 500,
+   "identical": true
+  },
+  "product_bundle.csv": {
+   "run1_sha256": "d9b6eb06e4ec8a3e13721c5ecd8b293c9ae842d44a478619aab7972c5e0282a1",
+   "run2_sha256": "d9b6eb06e4ec8a3e13721c5ecd8b293c9ae842d44a478619aab7972c5e0282a1",
+   "rows_run1": 73,
+   "rows_run2": 73,
+   "identical": true
+  },
+  "promotion.csv": {
+   "run1_sha256": "fd5c2589e2b85a37701d6336dcc21534384d184de65df29ae7383133341235b8",
+   "run2_sha256": "fd5c2589e2b85a37701d6336dcc21534384d184de65df29ae7383133341235b8",
+   "rows_run1": 150,
+   "rows_run2": 150,
+   "identical": true
+  },
+  "promotion_event.csv": {
+   "run1_sha256": "aa32f9aa2f1dd5525edaff8c1b5b5326010ddd0102c37a11358ecc11eb90c864",
+   "run2_sha256": "aa32f9aa2f1dd5525edaff8c1b5b5326010ddd0102c37a11358ecc11eb90c864",
+   "rows_run1": 537,
+   "rows_run2": 537,
+   "identical": true
+  },
+  "promotion_exclusion.csv": {
+   "run1_sha256": "cfd63d93a9860ae110c73167e614896df39dc314c593c077706046fe8b72ce6d",
+   "run2_sha256": "cfd63d93a9860ae110c73167e614896df39dc314c593c077706046fe8b72ce6d",
+   "rows_run1": 16,
+   "rows_run2": 16,
+   "identical": true
+  },
+  "promotion_product.csv": {
+   "run1_sha256": "41e70f76ff0cdc5573ef5e63f684c731151985b1f0ca35d79229a46a08e6b7b1",
+   "run2_sha256": "41e70f76ff0cdc5573ef5e63f684c731151985b1f0ca35d79229a46a08e6b7b1",
+   "rows_run1": 953,
+   "rows_run2": 953,
+   "identical": true
+  },
+  "promotion_rule.csv": {
+   "run1_sha256": "48f674635d1379849efecb3ef171d1243db1d0a9eb3e0b00ce7a2736577eb21f",
+   "run2_sha256": "48f674635d1379849efecb3ef171d1243db1d0a9eb3e0b00ce7a2736577eb21f",
+   "rows_run1": 179,
+   "rows_run2": 179,
+   "identical": true
+  },
+  "rules_config.json": {
+   "run1_sha256": "61337875235dad6c202efa234cb0b6afbbd08980b20086fe887e2ef2790ce0aa",
+   "run2_sha256": "61337875235dad6c202efa234cb0b6afbbd08980b20086fe887e2ef2790ce0aa",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "schema.sql": {
+   "run1_sha256": "a81d1af8f9578542977930c3a4c473c4edc0f88c6a10cc7459797b6d57213451",
+   "run2_sha256": "a81d1af8f9578542977930c3a4c473c4edc0f88c6a10cc7459797b6d57213451",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "seed.sql": {
+   "run1_sha256": "04d8e7e9b0cac17fddf2fbc88687a82d813f0b40349bc2b7c41c9416804f9043",
+   "run2_sha256": "04d8e7e9b0cac17fddf2fbc88687a82d813f0b40349bc2b7c41c9416804f9043",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "source_manifest.json": {
+   "run1_sha256": "775b8a0f209056324f34e7a044451281a583f8b9072c86c78a962e3405e45d66",
+   "run2_sha256": "775b8a0f209056324f34e7a044451281a583f8b9072c86c78a962e3405e45d66",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "ground_truth/ground_truth_anomalies.csv": {
+   "run1_sha256": "7f192cbe1736fc8573d738a458af36d2c921545aa5fe96cb7b420a3ca4762ac7",
+   "run2_sha256": "7f192cbe1736fc8573d738a458af36d2c921545aa5fe96cb7b420a3ca4762ac7",
+   "rows_run1": 77,
+   "rows_run2": 77,
+   "identical": true
+  },
+  "ground_truth/ground_truth_anomalies.json": {
+   "run1_sha256": "e20ffc7e9a94dc1375acf1a8014dc239fc1e13a23d284f9bf1c1c67140499e0f",
+   "run2_sha256": "e20ffc7e9a94dc1375acf1a8014dc239fc1e13a23d284f9bf1c1c67140499e0f",
+   "rows_run1": null,
+   "rows_run2": null,
+   "identical": true
+  },
+  "ground_truth/ground_truth_decisions.csv": {
+   "run1_sha256": "87f58293acb870595a4f5b98253040c973e54c769ec752d4596db42d887054e2",
+   "run2_sha256": "87f58293acb870595a4f5b98253040c973e54c769ec752d4596db42d887054e2",
+   "rows_run1": 4778,
+   "rows_run2": 4778,
+   "identical": true
+  }
+ }
+}

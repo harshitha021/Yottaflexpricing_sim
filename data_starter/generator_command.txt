@@ -1,0 +1,1 @@
+python generate.py --skus 500 --days 60 --promos 150 --seed 20261022 --out <OUT_DIR> --sql

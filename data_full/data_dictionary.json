@@ -1,0 +1,2316 @@
+{
+  "Product": {
+    "file": "product.csv",
+    "primary_key": [
+      "sku"
+    ],
+    "foreign_keys": [],
+    "description": "Master SKU. 1:N CostRecord, PriceHistory, InventorySnapshot, CompetitorObservation, Orders, PriceDecision; N:M Promotion via PromotionProduct.",
+    "fields": [
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "SKU-000001..",
+        "unit": "",
+        "unique": "PK",
+        "rule": "regex ^SKU-\\d{6}$, immutable"
+      },
+      {
+        "name": "product_name",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "category",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "Electronics",
+          "Home & Kitchen",
+          "Grocery",
+          "Apparel",
+          "Beauty",
+          "Sports",
+          "Toys",
+          "Office"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "brand",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "uom",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "EA"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "currency",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "USD"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "launch_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "< first price_date"
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "ACTIVE",
+          "DISCONTINUED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "lifecycle ACTIVE -> DISCONTINUED (terminal)"
+      },
+      {
+        "name": "discontinued_date",
+        "type": "date",
+        "required": "O",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "required iff status=DISCONTINUED; first inactive day, no price/inventory/order rows on/after it"
+      },
+      {
+        "name": "list_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "opening base price on first day; <= price_ceiling"
+      },
+      {
+        "name": "price_floor_abs",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "absolute floor = 1.05 x opening unit cost"
+      },
+      {
+        "name": "price_ceiling",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": ">= list_price (1.30 x list)"
+      },
+      {
+        "name": "min_margin_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "0.05..0.40",
+        "unit": "fraction of net price",
+        "unique": "",
+        "rule": "margin on NET price after all discounts"
+      },
+      {
+        "name": "lead_time_days",
+        "type": "int",
+        "required": "R",
+        "allowed": "3..30",
+        "unit": "days",
+        "unique": "",
+        "rule": ""
+      }
+    ]
+  },
+  "AnnualPriceHistory": {
+    "file": "annual_price_history.csv",
+    "primary_key": [
+      "aph_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "Five years (2021-2025) of annual reference price/cost per SKU with year-over-year % change. Product 1:N (exactly 5 rows).",
+    "fields": [
+      {
+        "name": "aph_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "APH-<sku>-YYYY"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product.sku"
+      },
+      {
+        "name": "year",
+        "type": "int",
+        "required": "R",
+        "allowed": "2021..2025",
+        "unit": "",
+        "unique": "unique with sku",
+        "rule": "5 consecutive years ending the year before the window"
+      },
+      {
+        "name": "ref_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "annual average selling price (anchored mid-year)"
+      },
+      {
+        "name": "prev_year_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= previous year's ref_price (2020 base for 2021)"
+      },
+      {
+        "name": "yoy_price_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "derived: ref_price/prev_year_price - 1"
+      },
+      {
+        "name": "ref_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "annual average unit cost"
+      },
+      {
+        "name": "prev_year_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "yoy_cost_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "derived: ref_cost/prev_year_cost - 1"
+      }
+    ]
+  },
+  "PriceGradient": {
+    "file": "price_gradient.csv",
+    "primary_key": [
+      "sku"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "Derived per-SKU gradient of the 5-year history (1:1 with Product). Recomputable from AnnualPriceHistory.",
+    "fields": [
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "FK Product.sku"
+      },
+      {
+        "name": "basis_start_year",
+        "type": "int",
+        "required": "R",
+        "allowed": [
+          2021
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "basis_end_year",
+        "type": "int",
+        "required": "R",
+        "allowed": [
+          2025
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "years_of_history",
+        "type": "int",
+        "required": "R",
+        "allowed": [
+          5
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "avg_yoy_price_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "mean of the 5 yoy_price_pct"
+      },
+      {
+        "name": "price_cagr_5y",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction/yr",
+        "unique": "",
+        "rule": "(ref_price 2025 / prev_year_price 2021)^(1/5) - 1"
+      },
+      {
+        "name": "max_yoy_price_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "min_yoy_price_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "yoy_price_stdev",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "sample stdev (n-1)"
+      },
+      {
+        "name": "cost_cagr_5y",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction/yr",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "last_ref_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= ref_price of 2025"
+      },
+      {
+        "name": "gradient_ceiling",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "last_ref_price*(1+max_yoy_price_pct+0.03)"
+      }
+    ]
+  },
+  "CostRecord": {
+    "file": "cost_record.csv",
+    "primary_key": [
+      "cost_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "One row per SKU per calendar month (append-only history of unit cost). Product 1:N CostRecord; (sku, cost_month) unique.",
+    "fields": [
+      {
+        "name": "cost_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "COST-<sku>-YYYY-MM"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product.sku"
+      },
+      {
+        "name": "cost_month",
+        "type": "string",
+        "required": "R",
+        "allowed": "YYYY-MM",
+        "unit": "",
+        "unique": "unique with sku",
+        "rule": ""
+      },
+      {
+        "name": "effective_from",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "first day of month"
+      },
+      {
+        "name": "effective_to",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "last day of month; >= effective_from; no overlap per sku"
+      },
+      {
+        "name": "unit_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "prev_unit_cost",
+        "type": "decimal",
+        "required": "O",
+        "allowed": "",
+        "unit": "USD",
+        "unique": "",
+        "rule": "null for first month"
+      },
+      {
+        "name": "cost_change_pct",
+        "type": "decimal",
+        "required": "O",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "derived: unit_cost/prev_unit_cost-1"
+      },
+      {
+        "name": "cost_change_reason",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "INITIAL",
+          "NO_CHANGE",
+          "SUPPLIER_INCREASE",
+          "FX_ADJUSTMENT",
+          "FREIGHT_SURCHARGE",
+          "NEGOTIATED_REDUCTION",
+          "VOLUME_REBATE"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      }
+    ]
+  },
+  "PriceHistory": {
+    "file": "price_history.csv",
+    "primary_key": [
+      "price_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      },
+      {
+        "column": "decision_id",
+        "references": "PriceDecision.decision_id"
+      }
+    ],
+    "description": "Daily price ledger (one row per active SKU-day, never overwritten). Product 1:N PriceHistory; PriceDecision 1:N PriceHistory (governing decision).",
+    "fields": [
+      {
+        "name": "price_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "PRC-<sku>-YYYYMMDD"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product.sku"
+      },
+      {
+        "name": "price_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "unique with sku",
+        "rule": "contiguous per sku within active period"
+      },
+      {
+        "name": "base_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "promo_discount_amt",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "total of applied promo discounts"
+      },
+      {
+        "name": "net_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= base_price - promo_discount_amt"
+      },
+      {
+        "name": "applied_promo_ids",
+        "type": "string",
+        "required": "O",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "pipe-separated Promotion ids; empty if none"
+      },
+      {
+        "name": "price_event",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "CARRY_FORWARD",
+          "DECISION_CHANGE",
+          "PROMO_CHANGE",
+          "DECISION_HOLD",
+          "MANUAL_CHANGE"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "change_reason_code",
+        "type": "string",
+        "required": "O",
+        "allowed": [
+          "COMP_MATCH_DOWN",
+          "COMP_RAISE",
+          "HOLD_IN_COMP_BAND",
+          "LOW_STOCK_MARKUP",
+          "OVERSTOCK_MARKDOWN",
+          "COST_PASS_THROUGH",
+          "GRADIENT_RECOVERY",
+          "FLOOR_REPAIR",
+          "CEILING_REPAIR",
+          "HOLD_STALE_COMPETITOR",
+          "HOLD_NO_SIGNAL",
+          "PROMO_APPLIED",
+          "PROMO_ENDED",
+          "PROMO_CHANGED",
+          "MANUAL_OVERRIDE",
+          "PRICE_MATCH_STORE",
+          "ERROR_CORRECTION"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "required whenever price_event in DECISION_CHANGE/PROMO_CHANGE/MANUAL_CHANGE"
+      },
+      {
+        "name": "decision_id",
+        "type": "string",
+        "required": "O",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK PriceDecision.decision_id (governing decision)"
+      }
+    ]
+  },
+  "CompetitorObservation": {
+    "file": "competitor_observation.csv",
+    "primary_key": [
+      "obs_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "Competitor price snapshots with source timestamp (observed_at) and ingestion timestamp (captured_at). Product 1:N.",
+    "fields": [
+      {
+        "name": "obs_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "COBS-2026-000001, ordered by captured_at"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product.sku"
+      },
+      {
+        "name": "competitor_id",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "COMP-A",
+          "COMP-B",
+          "COMP-C",
+          "COMP-D"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "observed_at",
+        "type": "datetime",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "unique with sku+competitor",
+        "rule": "source timestamp"
+      },
+      {
+        "name": "captured_at",
+        "type": "datetime",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ">= observed_at"
+      },
+      {
+        "name": "competitor_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "in_stock",
+        "type": "bool",
+        "required": "R",
+        "allowed": [
+          0,
+          1
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "SCRAPE_FEED",
+          "PARTNER_API",
+          "MANUAL_CHECK"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "source_lag_hours",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "hours",
+        "unique": "",
+        "rule": "derived: captured_at - observed_at"
+      }
+    ]
+  },
+  "InventorySnapshot": {
+    "file": "inventory_snapshot.csv",
+    "primary_key": [
+      "snapshot_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "Daily end-of-day stock and demand signal per active SKU. Product 1:N.",
+    "fields": [
+      {
+        "name": "snapshot_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "INV-<sku>-YYYYMMDD"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product.sku"
+      },
+      {
+        "name": "snapshot_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "unique with sku",
+        "rule": ""
+      },
+      {
+        "name": "opening_on_hand",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "= previous closing_on_hand"
+      },
+      {
+        "name": "units_received",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "demand_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "customer demand incl. unmet"
+      },
+      {
+        "name": "units_sold",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "= min(opening+received, demand); = sum(Orders.quantity) that day"
+      },
+      {
+        "name": "lost_sales_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: demand_units - units_sold"
+      },
+      {
+        "name": "closing_on_hand",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: opening + received - sold"
+      },
+      {
+        "name": "on_order_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "open replenishment quantity at end of day"
+      },
+      {
+        "name": "stockout_flag",
+        "type": "int",
+        "required": "R",
+        "allowed": [
+          0,
+          1
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "derived: closing_on_hand = 0"
+      },
+      {
+        "name": "avg_demand_7d",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units/day",
+        "unique": "",
+        "rule": "derived: trailing 7-day mean of demand_units (min periods 1)"
+      },
+      {
+        "name": "days_of_cover",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "0..999",
+        "unit": "days",
+        "unique": "",
+        "rule": "derived: closing_on_hand / max(avg_demand_7d,0.05), capped"
+      },
+      {
+        "name": "oldest_stock_age_days",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "days",
+        "unique": "",
+        "rule": "derived (FIFO over InventoryLot): age on snapshot_date of the oldest lot still in stock; 0 when no stock"
+      },
+      {
+        "name": "slow_moving_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: closing units in lots aged 61-90 days"
+      },
+      {
+        "name": "aged_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: closing units in lots older than 90 days"
+      },
+      {
+        "name": "stock_age_class",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "FRESH",
+          "NORMAL",
+          "SLOW_MOVING",
+          "AGED",
+          "NO_STOCK"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "derived: class of oldest_stock_age_days (NO_STOCK when closing_on_hand = 0)"
+      }
+    ]
+  },
+  "InventoryLot": {
+    "file": "inventory_lot.csv",
+    "primary_key": [
+      "lot_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "Stock receipt lots (opening balance + every replenishment receipt) used for FIFO inventory age. Product 1:N. Sales consume the oldest lot first.",
+    "fields": [
+      {
+        "name": "lot_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "LOT-<sku>-YYYYMMDD (receipt date; opening lot is dated before the window)"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "unique with received_date",
+        "rule": "FK Product.sku"
+      },
+      {
+        "name": "received_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "unique per sku; replenishment lots = InventorySnapshot.units_received days"
+      },
+      {
+        "name": "received_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=1",
+        "unit": "units",
+        "unique": "",
+        "rule": "replenishment lots: = InventorySnapshot.units_received that day"
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "OPENING_BALANCE",
+          "REPLENISHMENT"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "unit_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "CostRecord unit cost in the receipt month (opening lot: first window month)"
+      },
+      {
+        "name": "remaining_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: FIFO units still in stock on the SKU's last active day"
+      },
+      {
+        "name": "lot_status",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "OPEN",
+          "DEPLETED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "OPEN iff remaining_units > 0"
+      }
+    ]
+  },
+  "Promotion": {
+    "file": "promotion.csv",
+    "primary_key": [
+      "promo_id"
+    ],
+    "foreign_keys": [],
+    "description": "Promotion/coupon header. N:M with Product via PromotionProduct; N:M with itself via PromotionExclusion; 1:N PromotionRule, PromotionEvent.",
+    "fields": [
+      {
+        "name": "promo_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "PROMO-2026-000001"
+      },
+      {
+        "name": "promo_name",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "promo_type",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "PCT_OFF",
+          "FIXED_OFF",
+          "COUPON"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "stack_group",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "SEASONAL",
+          "CLEARANCE",
+          "BRAND",
+          "LOYALTY",
+          "COUPON"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "COUPON type must be group COUPON"
+      },
+      {
+        "name": "discount_pct",
+        "type": "decimal",
+        "required": "O",
+        "allowed": "0.01..0.50",
+        "unit": "fraction of current price",
+        "unique": "",
+        "rule": "required for PCT_OFF/COUPON"
+      },
+      {
+        "name": "discount_amt",
+        "type": "decimal",
+        "required": "O",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "required for FIXED_OFF"
+      },
+      {
+        "name": "coupon_code",
+        "type": "string",
+        "required": "O",
+        "allowed": "",
+        "unit": "",
+        "unique": "unique when present",
+        "rule": "required for COUPON"
+      },
+      {
+        "name": "scope_category",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "Electronics",
+          "Home & Kitchen",
+          "Grocery",
+          "Apparel",
+          "Beauty",
+          "Sports",
+          "Toys",
+          "Office"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "start_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "aligned to review-week boundaries"
+      },
+      {
+        "name": "end_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ">= start_date; multiple of 7 days long"
+      },
+      {
+        "name": "created_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "< start_date"
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "DRAFT",
+          "SCHEDULED",
+          "ACTIVE",
+          "ENDED",
+          "CANCELLED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "status as of as_of date; derived from last PromotionEvent"
+      }
+    ]
+  },
+  "PromotionRule": {
+    "file": "promotion_rule.csv",
+    "primary_key": [
+      "rule_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "promo_id",
+        "references": "Promotion.promo_id"
+      }
+    ],
+    "description": "Promotion-specific eligibility/stacking rules. Promotion 1:N (>=1). Global rules are in rules_config.json.",
+    "fields": [
+      {
+        "name": "rule_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "PRULE-2026-000001"
+      },
+      {
+        "name": "promo_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Promotion.promo_id"
+      },
+      {
+        "name": "rule_type",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "MIN_STOCK_UNITS",
+          "EXCLUSIVE",
+          "MIN_MARGIN_PCT"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "rule_value",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "units | flag(1) | fraction",
+        "unique": "",
+        "rule": "MIN_STOCK_UNITS: on_hand >= value; EXCLUSIVE: cannot combine; MIN_MARGIN_PCT: net margin >= value"
+      }
+    ]
+  },
+  "PromotionProduct": {
+    "file": "promotion_product.csv",
+    "primary_key": [
+      "promo_id",
+      "sku"
+    ],
+    "foreign_keys": [
+      {
+        "column": "promo_id",
+        "references": "Promotion.promo_id"
+      },
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "Bridge for N:M Promotion <-> Product (eligible assortment).",
+    "fields": [
+      {
+        "name": "promo_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK part",
+        "rule": "FK Promotion"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK part",
+        "rule": "FK Product"
+      },
+      {
+        "name": "added_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "= Promotion.created_date"
+      }
+    ]
+  },
+  "PromotionExclusion": {
+    "file": "promotion_exclusion.csv",
+    "primary_key": [
+      "promo_id_a",
+      "promo_id_b"
+    ],
+    "foreign_keys": [
+      {
+        "column": "promo_id_a",
+        "references": "Promotion.promo_id"
+      },
+      {
+        "column": "promo_id_b",
+        "references": "Promotion.promo_id"
+      }
+    ],
+    "description": "Bridge for N:M Promotion <-> Promotion explicit conflicts (e.g. conflicting coupons). Symmetric; stored once with a<b.",
+    "fields": [
+      {
+        "name": "promo_id_a",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK part",
+        "rule": "FK Promotion; a < b"
+      },
+      {
+        "name": "promo_id_b",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK part",
+        "rule": "FK Promotion"
+      },
+      {
+        "name": "exclusion_reason",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "CONFLICTING_COUPON"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      }
+    ]
+  },
+  "PromotionEvent": {
+    "file": "promotion_event.csv",
+    "primary_key": [
+      "event_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "promo_id",
+        "references": "Promotion.promo_id"
+      }
+    ],
+    "description": "Append-only lifecycle history. Promotion 1:N. DRAFT->SCHEDULED->ACTIVE->ENDED or SCHEDULED->CANCELLED.",
+    "fields": [
+      {
+        "name": "event_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "PEVT-<promo_id>-NN"
+      },
+      {
+        "name": "promo_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Promotion"
+      },
+      {
+        "name": "event_seq",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=1",
+        "unit": "",
+        "unique": "unique with promo_id",
+        "rule": ""
+      },
+      {
+        "name": "event_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "non-decreasing in event_seq; <= as_of"
+      },
+      {
+        "name": "from_status",
+        "type": "string",
+        "required": "O",
+        "allowed": [
+          "DRAFT",
+          "SCHEDULED",
+          "ACTIVE",
+          "ENDED",
+          "CANCELLED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "to_status",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "DRAFT",
+          "SCHEDULED",
+          "ACTIVE",
+          "ENDED",
+          "CANCELLED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "must be an allowed transition"
+      }
+    ]
+  },
+  "Orders": {
+    "file": "orders.csv",
+    "primary_key": [
+      "order_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      },
+      {
+        "column": "price_id",
+        "references": "PriceHistory.price_id"
+      },
+      {
+        "column": "decision_id",
+        "references": "PriceDecision.decision_id"
+      },
+      {
+        "column": "bundle_order_id",
+        "references": "BundleOrder.bundle_order_id"
+      }
+    ],
+    "description": "Fulfilled order lines per SKU-day-channel. Product 1:N; PriceHistory 1:N; every line priced from the PriceHistory row of its day.",
+    "fields": [
+      {
+        "name": "order_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "ORD-2026-000001"
+      },
+      {
+        "name": "order_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product"
+      },
+      {
+        "name": "price_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK PriceHistory; = PRC-<sku>-<order_date>"
+      },
+      {
+        "name": "decision_id",
+        "type": "string",
+        "required": "O",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK PriceDecision; = PriceHistory.decision_id"
+      },
+      {
+        "name": "channel",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "WEB",
+          "STORE",
+          "MARKETPLACE"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "customer_segment",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "CONSUMER",
+          "BUSINESS",
+          "LOYALTY_MEMBER"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "quantity",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=1",
+        "unit": "units",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "unit_base_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= PriceHistory.base_price"
+      },
+      {
+        "name": "unit_net_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= PriceHistory.net_price"
+      },
+      {
+        "name": "unit_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= CostRecord.unit_cost of the order month"
+      },
+      {
+        "name": "line_total",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "derived: quantity * unit_net_price"
+      },
+      {
+        "name": "order_status",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "FULFILLED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "only fulfilled lines are generated (reconcile to units_sold)"
+      },
+      {
+        "name": "bundle_order_id",
+        "type": "string",
+        "required": "O",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK BundleOrder; set on the two component lines (one per SKU) of a bundle sale, else empty. Bundle lines: unit_net_price = allocated bundle price, not PriceHistory.net_price"
+      }
+    ]
+  },
+  "ProductBundle": {
+    "file": "product_bundle.csv",
+    "primary_key": [
+      "bundle_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "primary_sku",
+        "references": "Product.sku"
+      },
+      {
+        "column": "secondary_sku",
+        "references": "Product.sku"
+      }
+    ],
+    "description": "Inventory-clearance bundle: one high-demand (primary) SKU + one aged/slow-moving complementary (secondary) SKU. Every evaluated candidate is stored; rejected ones have status CANCELLED and a rejection_reason (audit trail). Product 1:N (twice); 1:N BundleOrder.",
+    "fields": [
+      {
+        "name": "bundle_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "BNDL-2026-000001, chronological"
+      },
+      {
+        "name": "primary_sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product.sku; high-demand component"
+      },
+      {
+        "name": "secondary_sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product.sku; slow-moving/aged component; != primary_sku; at most one accepted bundle per pair at a time"
+      },
+      {
+        "name": "bundle_discount_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "0.05..0.15",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "configurable; grows with secondary stock age"
+      },
+      {
+        "name": "primary_unit_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= PriceHistory.base_price of primary on created_at date"
+      },
+      {
+        "name": "secondary_unit_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= PriceHistory.base_price of secondary on created_at date"
+      },
+      {
+        "name": "individual_total_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "derived: primary_unit_price + secondary_unit_price"
+      },
+      {
+        "name": "bundle_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "derived: round(individual_total_price x (1 - bundle_discount_pct), 2)"
+      },
+      {
+        "name": "combined_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "derived: unit costs of both SKUs in the valid_from month (CostRecord)"
+      },
+      {
+        "name": "bundle_margin_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction of bundle price",
+        "unique": "",
+        "rule": "derived: (bundle_price - combined_cost) / bundle_price"
+      },
+      {
+        "name": "required_margin_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "max(Product.min_margin_pct of both components)"
+      },
+      {
+        "name": "valid_from",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "day after created_at"
+      },
+      {
+        "name": "valid_to",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ">= valid_from; <= valid_from + validity - 1; <= last active day of both SKUs"
+      },
+      {
+        "name": "bundle_status",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "DRAFT",
+          "ACTIVE",
+          "EXPIRED",
+          "CANCELLED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "CANCELLED iff rejection_reason set; else EXPIRED if valid_to < as_of, DRAFT if valid_from > as_of, else ACTIVE"
+      },
+      {
+        "name": "rejection_reason",
+        "type": "string",
+        "required": "O",
+        "allowed": [
+          "COMPONENT_DISCONTINUED",
+          "INSUFFICIENT_STOCK",
+          "DUPLICATE_ACTIVE_BUNDLE",
+          "BELOW_PRICE_FLOOR",
+          "BELOW_MIN_MARGIN"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "first failing rule in documented order; empty when accepted"
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "review date 06:00:00"
+      },
+      {
+        "name": "primary_avg_demand_30d",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units/day",
+        "unique": "",
+        "rule": "derived: mean InventorySnapshot.demand_units of the previous min(30, day) days"
+      },
+      {
+        "name": "primary_demand_threshold",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units/day",
+        "unique": "",
+        "rule": "category percentile of that metric among live SKUs on created_at date"
+      },
+      {
+        "name": "primary_sellable_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: floor(on_hand_units x (1 - reserve)); on_hand = opening + received on created_at date"
+      },
+      {
+        "name": "secondary_sellable_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: same for the secondary SKU"
+      },
+      {
+        "name": "max_bundle_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "bundles",
+        "unique": "",
+        "rule": "derived: min(primary_sellable_units, secondary_sellable_units); cap on bundles sold"
+      },
+      {
+        "name": "secondary_oldest_age_days",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "days",
+        "unique": "",
+        "rule": "derived (FIFO replay): age of the oldest lot of the secondary at created_at"
+      },
+      {
+        "name": "secondary_stock_age_class",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "FRESH",
+          "NORMAL",
+          "SLOW_MOVING",
+          "AGED",
+          "NO_STOCK"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "secondary_slow_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: secondary units in lots aged 61-90 days at created_at"
+      },
+      {
+        "name": "secondary_aged_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived: secondary units in lots older than 90 days at created_at"
+      }
+    ]
+  },
+  "BundleOrder": {
+    "file": "bundle_order.csv",
+    "primary_key": [
+      "bundle_order_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "bundle_id",
+        "references": "ProductBundle.bundle_id"
+      },
+      {
+        "column": "order_id",
+        "references": "Orders.order_id"
+      },
+      {
+        "column": "secondary_order_id",
+        "references": "Orders.order_id"
+      }
+    ],
+    "description": "Bundle sales: one row per bundle per day. Each row has exactly two Orders lines (primary and secondary SKU) with the same quantity, so both SKUs' units_sold / InventorySnapshot move. ProductBundle 1:N; Orders 1:2.",
+    "fields": [
+      {
+        "name": "bundle_order_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "BORD-2026-000001"
+      },
+      {
+        "name": "bundle_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK ProductBundle; bundle must be accepted and order_date within [valid_from, valid_to]"
+      },
+      {
+        "name": "order_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Orders: line of the primary SKU"
+      },
+      {
+        "name": "secondary_order_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Orders: line of the secondary SKU"
+      },
+      {
+        "name": "order_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "channel",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "WEB",
+          "STORE",
+          "MARKETPLACE"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "quantity",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=1",
+        "unit": "bundles",
+        "unique": "",
+        "rule": "units of EACH component; cumulative per bundle <= max_bundle_units"
+      },
+      {
+        "name": "bundle_selling_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= ProductBundle.bundle_price"
+      },
+      {
+        "name": "total_revenue",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "derived: quantity x bundle_selling_price"
+      },
+      {
+        "name": "total_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "derived: quantity x (unit_cost primary + unit_cost secondary) of the order month"
+      },
+      {
+        "name": "gross_profit",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "USD",
+        "unique": "",
+        "rule": "derived: total_revenue - total_cost"
+      },
+      {
+        "name": "aged_units_cleared",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "derived (FIFO replay): secondary units of this sale taken from lots older than 90 days"
+      }
+    ]
+  },
+  "PriceDecision": {
+    "file": "price_decision.csv",
+    "primary_key": [
+      "decision_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "sku",
+        "references": "Product.sku"
+      },
+      {
+        "column": "cost_id",
+        "references": "CostRecord.cost_id"
+      },
+      {
+        "column": "competitor_obs_id",
+        "references": "CompetitorObservation.obs_id"
+      }
+    ],
+    "description": "Stored decision inputs and outcomes. Product 1:N; N:M Promotion via DecisionPromotion. Weekly review plus off-cycle COST_CHANGE reviews.",
+    "fields": [
+      {
+        "name": "decision_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK",
+        "rule": "DEC-2026-000001 chronological"
+      },
+      {
+        "name": "sku",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK Product"
+      },
+      {
+        "name": "decision_date",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "decided_at",
+        "type": "datetime",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "decision_date 06:00:00"
+      },
+      {
+        "name": "trigger",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "WEEKLY_REVIEW",
+          "COST_CHANGE"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "valid_from",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "= decision_date"
+      },
+      {
+        "name": "valid_to",
+        "type": "date",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": ">= valid_from; day before next weekly review or window end"
+      },
+      {
+        "name": "cost_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK CostRecord covering decision_date"
+      },
+      {
+        "name": "unit_cost",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= CostRecord.unit_cost"
+      },
+      {
+        "name": "price_before",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "base price in force before decision"
+      },
+      {
+        "name": "on_hand_units",
+        "type": "int",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units",
+        "unique": "",
+        "rule": "stock at decision time (opening + receipts of the day)"
+      },
+      {
+        "name": "avg_daily_demand_7d",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "units/day",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "days_of_cover",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "0..999",
+        "unit": "days",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "competitor_obs_id",
+        "type": "string",
+        "required": "O",
+        "allowed": "",
+        "unit": "",
+        "unique": "",
+        "rule": "FK CompetitorObservation considered (fresh min, else freshest stale)"
+      },
+      {
+        "name": "competitor_price",
+        "type": "decimal",
+        "required": "O",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= obs.competitor_price"
+      },
+      {
+        "name": "competitor_obs_age_days",
+        "type": "decimal",
+        "required": "O",
+        "allowed": ">=0",
+        "unit": "days",
+        "unique": "",
+        "rule": "derived: (decided_at - observed_at)/24h"
+      },
+      {
+        "name": "effective_floor",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "max(price_floor_abs, ceil_cent(unit_cost/(1-min_margin_pct)))"
+      },
+      {
+        "name": "price_ceiling",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "static ceiling = max(Product.price_ceiling, effective_floor)"
+      },
+      {
+        "name": "gradient_ref_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "expected price from 5-yr gradient at decision date"
+      },
+      {
+        "name": "gradient_ceiling",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= PriceGradient.gradient_ceiling; applied ceiling = max(min(price_ceiling, gradient_ceiling), effective_floor)"
+      },
+      {
+        "name": "min_margin_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction",
+        "unique": "",
+        "rule": "= Product.min_margin_pct"
+      },
+      {
+        "name": "candidate_base_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "policy target before step-limit and guardrails"
+      },
+      {
+        "name": "base_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "chosen list/base price"
+      },
+      {
+        "name": "promo_discount_amt",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "sum of DecisionPromotion.discount_amt where APPLIED"
+      },
+      {
+        "name": "net_price",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "= base_price - promo_discount_amt"
+      },
+      {
+        "name": "margin_pct",
+        "type": "decimal",
+        "required": "R",
+        "allowed": "",
+        "unit": "fraction of net price",
+        "unique": "",
+        "rule": "(net_price - unit_cost)/net_price"
+      },
+      {
+        "name": "guardrail_flags",
+        "type": "string",
+        "required": "O",
+        "allowed": "STEP_LIMITED|FLOOR_CLAMPED|CEILING_CLAMPED|GRADIENT_CAPPED",
+        "unit": "",
+        "unique": "",
+        "rule": "pipe-separated"
+      },
+      {
+        "name": "reason_code",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "COMP_MATCH_DOWN",
+          "COMP_RAISE",
+          "HOLD_IN_COMP_BAND",
+          "LOW_STOCK_MARKUP",
+          "OVERSTOCK_MARKDOWN",
+          "COST_PASS_THROUGH",
+          "GRADIENT_RECOVERY",
+          "FLOOR_REPAIR",
+          "CEILING_REPAIR",
+          "HOLD_STALE_COMPETITOR",
+          "HOLD_NO_SIGNAL"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "outcome",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "PRICE_CHANGED",
+          "PRICE_HELD"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "PRICE_CHANGED iff base_price != price_before"
+      }
+    ]
+  },
+  "DecisionPromotion": {
+    "file": "decision_promotion.csv",
+    "primary_key": [
+      "decision_id",
+      "promo_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "decision_id",
+        "references": "PriceDecision.decision_id"
+      },
+      {
+        "column": "promo_id",
+        "references": "Promotion.promo_id"
+      }
+    ],
+    "description": "Bridge N:M PriceDecision <-> Promotion: every candidate promotion evaluated, with status and reason (eligibility is reproducible from these + rules).",
+    "fields": [
+      {
+        "name": "decision_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK part",
+        "rule": "FK PriceDecision"
+      },
+      {
+        "name": "promo_id",
+        "type": "string",
+        "required": "R",
+        "allowed": "",
+        "unit": "",
+        "unique": "PK part",
+        "rule": "FK Promotion"
+      },
+      {
+        "name": "evaluation_status",
+        "type": "string",
+        "required": "R",
+        "allowed": [
+          "APPLIED",
+          "REJECTED"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": ""
+      },
+      {
+        "name": "rejection_reason",
+        "type": "string",
+        "required": "O",
+        "allowed": [
+          "MIN_STOCK",
+          "EXCLUSIVE_WITH_OTHER",
+          "SAME_GROUP",
+          "CONFLICT_PAIR",
+          "MAX_STACK",
+          "MAX_TOTAL_DISCOUNT",
+          "FLOOR_GUARDRAIL",
+          "MARGIN_GUARDRAIL"
+        ],
+        "unit": "",
+        "unique": "",
+        "rule": "required iff REJECTED"
+      },
+      {
+        "name": "apply_sequence",
+        "type": "int",
+        "required": "O",
+        "allowed": ">=1",
+        "unit": "",
+        "unique": "",
+        "rule": "required iff APPLIED"
+      },
+      {
+        "name": "discount_amt",
+        "type": "decimal",
+        "required": "R",
+        "allowed": ">=0",
+        "unit": "USD",
+        "unique": "",
+        "rule": "0 when rejected"
+      }
+    ]
+  }
+}

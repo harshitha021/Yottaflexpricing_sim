@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+my_run/
+
+# Full-scale data is too large for GitHub (files >100 MB are rejected).
+# Regenerate it with the command in README.md; checksums are in data_full/reproducibility_report.json.
+data_full/*.csv
+data_full/seed.sql

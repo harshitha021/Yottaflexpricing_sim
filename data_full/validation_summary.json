@@ -1,0 +1,978 @@
+{
+  "data_dir": "data_full",
+  "row_counts": {
+    "Product": 5000,
+    "AnnualPriceHistory": 25000,
+    "PriceGradient": 5000,
+    "CostRecord": 35000,
+    "Promotion": 2000,
+    "PromotionRule": 2330,
+    "PromotionProduct": 27118,
+    "PromotionExclusion": 232,
+    "PromotionEvent": 7268,
+    "CompetitorObservation": 319499,
+    "InventoryLot": 31069,
+    "InventorySnapshot": 891361,
+    "PriceDecision": 137605,
+    "PriceHistory": 891361,
+    "ProductBundle": 1052,
+    "Orders": 937981,
+    "BundleOrder": 4160,
+    "DecisionPromotion": 51948
+  },
+  "checks_passed": 190,
+  "checks_total": 190,
+  "all_passed": true,
+  "checks": [
+    {
+      "check": "Product: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "Product: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "Product: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "Product: sku matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "AnnualPriceHistory: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "AnnualPriceHistory: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "AnnualPriceHistory: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "AnnualPriceHistory: aph_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "AnnualPriceHistory.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PriceGradient: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PriceGradient: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PriceGradient: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "PriceGradient.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "CostRecord: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "CostRecord: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "CostRecord: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "CostRecord: cost_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "CostRecord.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "Promotion: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "Promotion: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "Promotion: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "Promotion: promo_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PromotionRule: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionRule: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionRule: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "PromotionRule: rule_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PromotionRule.promo_id -> Promotion.promo_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PromotionProduct: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionProduct: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionProduct: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "PromotionProduct.promo_id -> Promotion.promo_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PromotionProduct.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PromotionExclusion: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionExclusion: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionExclusion: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "PromotionExclusion.promo_id_a -> Promotion.promo_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PromotionExclusion.promo_id_b -> Promotion.promo_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PromotionEvent: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionEvent: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PromotionEvent: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "PromotionEvent.promo_id -> Promotion.promo_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "CompetitorObservation: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "CompetitorObservation: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "CompetitorObservation: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "CompetitorObservation: obs_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "CompetitorObservation.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "InventoryLot: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "InventoryLot: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "InventoryLot: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "InventoryLot: lot_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "InventorySnapshot: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "InventorySnapshot: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "InventorySnapshot: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "InventorySnapshot: snapshot_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventorySnapshot.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PriceDecision: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PriceDecision: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PriceDecision: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "PriceDecision: decision_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceDecision.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PriceDecision.cost_id -> CostRecord.cost_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PriceDecision.competitor_obs_id -> CompetitorObservation.obs_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PriceHistory: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PriceHistory: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "PriceHistory: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "PriceHistory: price_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceHistory.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PriceHistory.decision_id -> PriceDecision.decision_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "ProductBundle: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "ProductBundle: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "ProductBundle: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "ProductBundle: bundle_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle.primary_sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "ProductBundle.secondary_sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "Orders: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "Orders: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "Orders: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "Orders: order_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Orders.sku -> Product.sku FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "Orders.price_id -> PriceHistory.price_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "Orders.decision_id -> PriceDecision.decision_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "Orders.bundle_order_id -> BundleOrder.bundle_order_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "BundleOrder: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "BundleOrder: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "BundleOrder: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "BundleOrder: bundle_order_id matches naming convention",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "BundleOrder.bundle_id -> ProductBundle.bundle_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "BundleOrder.order_id -> Orders.order_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "BundleOrder.secondary_order_id -> Orders.order_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "DecisionPromotion: required fields non-null",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "DecisionPromotion: enum values allowed",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "check": "DecisionPromotion: primary key unique",
+      "passed": true,
+      "detail": "dups=0"
+    },
+    {
+      "check": "DecisionPromotion.decision_id -> PriceDecision.decision_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "DecisionPromotion.promo_id -> Promotion.promo_id FK integrity",
+      "passed": true,
+      "detail": "orphans=0"
+    },
+    {
+      "check": "PriceHistory (sku, price_date) unique",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventorySnapshot (sku, snapshot_date) unique",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "CostRecord (sku, cost_month) unique",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "CompetitorObservation no duplicate (sku, competitor, observed_at)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Promotion coupon_code unique",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Promotion coupon_code present iff COUPON",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Promotion discount field matches type",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Promotion start<=end, created<start",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "CostRecord effective_from<=effective_to",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Observation observed_at<=captured_at",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Observation source_lag_hours reconciles",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceDecision valid_from<=valid_to and = decision_date",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Product launch_date < first price_date",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Discontinued SKUs: no rows on/after discontinued_date; status/date consistent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Orders/Inventory only on active days",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceHistory contiguous daily per SKU",
+      "passed": true,
+      "detail": "gaps=0"
+    },
+    {
+      "check": "PriceHistory/Inventory same SKU-days",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceHistory net = base - discount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceDecision net = base - discount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Decision promo_discount_amt = sum applied DecisionPromotion",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "DecisionPromotion APPLIED/REJECTED field consistency",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "INV closing = opening + received - sold",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "INV sold<=demand, lost=demand-sold, stockout flag",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "INV opening(t) = closing(t-1)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "INV days_of_cover = closing/max(avg7,0.05)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Orders qty by SKU-day = InventorySnapshot.units_sold",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Orders line_total = qty * net",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Orders (non-bundle) price/decision match PriceHistory",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Orders unit_cost = CostRecord for month",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "CostRecord prev/change_pct derived",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Decision unit_cost/cost_id match CostRecord",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Decision competitor_price/age derived from observation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Decision uses only already-captured observations",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Decision outcome consistent with price_before/base_price",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceHistory decision-day rows equal PriceDecision outcome",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "AnnualPriceHistory: 5 consecutive years 2021-2025 for every SKU",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "AnnualPriceHistory: yoy % = ref/prev - 1 (price and cost)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "AnnualPriceHistory: prev_year = previous year's ref (chain continuity)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PriceGradient derived from AnnualPriceHistory (avg, CAGR, max, min, stdev, cost CAGR, ceiling)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Product.list_price consistent with 5-year gradient (within 5%)",
+      "passed": true,
+      "detail": "min=0.973 max=1.026"
+    },
+    {
+      "check": "Opening unit cost consistent with 5-year cost gradient (within 10%)",
+      "passed": true,
+      "detail": "min=0.995 max=1.006"
+    },
+    {
+      "check": "Decision gradient_ref_price / gradient_ceiling reproducible from PriceGradient",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Promotion lifecycle transitions valid & chronological",
+      "passed": true,
+      "detail": "bad=0"
+    },
+    {
+      "check": "Promotion.status = last PromotionEvent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PromotionEvent dates <= as_of",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Cancelled/draft promos never applied",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Evaluated promos active over decision window",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Evaluated promos target the SKU (PromotionProduct)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "PromotionExclusion a<b",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot: at most one opening lot per SKU, dated before the window",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot: replenishment lots dated inside the window",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot (sku, received_date) unique",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot: receipts = InventorySnapshot.units_received; opening lot = first opening_on_hand",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot: FIFO lots reconcile to closing_on_hand",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventorySnapshot oldest_stock_age_days / slow_moving_units / aged_units reproduce from InventoryLot FIFO replay",
+      "passed": true,
+      "detail": "mismatches=0"
+    },
+    {
+      "check": "InventorySnapshot stock_age_class = threshold class of oldest lot",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventorySnapshot aged/slow units <= closing_on_hand",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot remaining_units / lot_status derived from FIFO",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "InventoryLot unit_cost = CostRecord of receipt month",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: primary != secondary SKU",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: categories are complementary (bundle_complement_map)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: secondary price <= ratio x primary price",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: rejection_reason set iff status CANCELLED",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: status derived from validity window vs as_of",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: valid_from = day after created_at; valid_to within validity window",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: accepted bundles end on/before last active day of both SKUs",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: created on review days with >= min history",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: unit prices = PriceHistory.base_price on created_at date",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: individual_total_price and bundle_price formula",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: combined_cost = CostRecord of both SKUs in valid_from month",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: bundle_margin_pct = (price - combined_cost)/price (same margin basis)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: required_margin_pct = max(min_margin_pct of components)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: accepted bundle_price >= sum of effective floors (price guardrail)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: discount within configured range (exceptions are only margin-violating approvals)",
+      "passed": true,
+      "detail": "outside=47"
+    },
+    {
+      "check": "ProductBundle: no duplicate overlapping accepted bundle for the same SKU pair",
+      "passed": true,
+      "detail": "overlaps=0"
+    },
+    {
+      "check": "ProductBundle: sellable units / max_bundle_units reproduce from InventorySnapshot (stock net of reserve)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: INSUFFICIENT_STOCK rejection iff a component lacks stock; accepted bundles always have stock",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "ProductBundle: primary demand metric and category threshold reproduce from InventorySnapshot",
+      "passed": true,
+      "detail": "mismatches=0"
+    },
+    {
+      "check": "ProductBundle: primary is a high-demand product (>= category percentile and min demand)",
+      "passed": true,
+      "detail": "violations=0"
+    },
+    {
+      "check": "ProductBundle: secondary stock age (FIFO replay) matches and secondary is slow-moving/aged",
+      "passed": true,
+      "detail": "age mismatches=0; ineligible=0"
+    },
+    {
+      "check": "BundleOrder: only accepted bundles sell, only inside valid_from..valid_to (expired/cancelled/draft cannot)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "BundleOrder: cumulative quantity per bundle <= max_bundle_units (limited by lower stock)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "BundleOrder: two Orders lines (primary + secondary SKU) per bundle sale with same date/qty/channel/link",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "BundleOrder: component Orders lines carry the allocated bundle price (sum = bundle_price)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "BundleOrder: revenue, cost, gross profit derived correctly",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Bundle sales are part of InventorySnapshot.units_sold of BOTH SKUs (<= units_sold; Orders reconcile)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "BundleOrder: aged_units_cleared reproduces from FIFO replay",
+      "passed": true,
+      "detail": "mismatches=0"
+    },
+    {
+      "check": "Bundle sales do not alter PriceHistory / PriceDecision (bundle price is a separate offer)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Decision effective_floor reproducible from Product+CostRecord",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Every price move has a change_reason_code (excluding labelled anomalies)",
+      "passed": true,
+      "detail": "scored below"
+    },
+    {
+      "check": "Eligibility replay: mismatches == injected stack/margin anomalies",
+      "passed": true,
+      "detail": "replayed=42658 decisions; mismatches=236; injected=236"
+    },
+    {
+      "check": "Detectors recover every injected anomaly (recall=1, precision=1)",
+      "passed": true,
+      "detail": "{\"PRICE_BELOW_FLOOR\": [1.0, 1.0], \"PROMO_STACK_VIOLATION\": [1.0, 1.0], \"STALE_OBSERVATION_AS_CURRENT\": [1.0, 1.0], \"MARGIN_BEFORE_DISCOUNT\": [1.0, 1.0], \"PRICE_CHANGE_WITHOUT_REASON\": [1.0, 1.0], \"PRICE_ABOVE_GRADIENT_CEILING\": [1.0, 1.0], \"BUNDLE_BELOW_MARGIN\": [1.0, 1.0]}"
+    },
+    {
+      "check": "Clean decisions match expected ground-truth decisions (base, net, reason)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "Guardrails enforced on all non-injected decisions",
+      "passed": true,
+      "detail": "violations=0"
+    },
+    {
+      "check": "No ground-truth columns leaked into input tables",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

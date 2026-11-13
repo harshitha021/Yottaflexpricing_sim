@@ -1,0 +1,151 @@
+{
+  "revenue": 2257650.09,
+  "gross_margin": 851942.38,
+  "gross_margin_pct": 0.3774,
+  "units_sold": 61445,
+  "promo_unit_share": 0.2317,
+  "stockout_sku_day_rate": 0.0348,
+  "lost_sales_unit_share": 0.0281,
+  "gradient_capped_decision_share": 0.0251,
+  "gradient_recovery_decisions": 631,
+  "avg_base_vs_gradient_ref_index": 0.97,
+  "avg_price_cagr_5y_by_category": {
+    "Apparel": 0.0343,
+    "Beauty": 0.0285,
+    "Electronics": 0.0179,
+    "Grocery": 0.0401,
+    "Home & Kitchen": 0.0284,
+    "Office": 0.024,
+    "Sports": 0.0221,
+    "Toys": 0.0247
+  },
+  "decisions": 4778,
+  "price_changed_share": 0.5117,
+  "decisions_by_reason": {
+    "HOLD_IN_COMP_BAND": 1835,
+    "COMP_MATCH_DOWN": 909,
+    "GRADIENT_RECOVERY": 631,
+    "HOLD_NO_SIGNAL": 457,
+    "LOW_STOCK_MARKUP": 371,
+    "COMP_RAISE": 286,
+    "COST_PASS_THROUGH": 198,
+    "OVERSTOCK_MARKDOWN": 60,
+    "HOLD_STALE_COMPETITOR": 31
+  },
+  "promo_rejections_by_reason": {
+    "FLOOR_GUARDRAIL": 230,
+    "MIN_STOCK": 171,
+    "MARGIN_GUARDRAIL": 113,
+    "MAX_TOTAL_DISCOUNT": 79,
+    "EXCLUSIVE_WITH_OTHER": 46,
+    "SAME_GROUP": 26,
+    "MAX_STACK": 2,
+    "CONFLICT_PAIR": 2
+  },
+  "stale_competitor_obs_at_decision_share": 0.0103,
+  "guardrail_pass_rate_all_decisions": 0.99602,
+  "avg_net_price_vs_competitor_index": 0.9639,
+  "bundles_evaluated": 73,
+  "bundles_created": 37,
+  "bundles_active": 7,
+  "bundles_expired": 30,
+  "bundles_cancelled": 36,
+  "bundle_units_sold": 1072,
+  "bundle_component_units_sold": 2144,
+  "aged_inventory_units_cleared": 1031,
+  "bundle_revenue": 104263.27,
+  "bundle_gross_profit": 35988.15,
+  "bundle_avg_discount_pct": 0.1544,
+  "bundle_planned_avg_margin_pct": 0.3476,
+  "bundle_realised_margin_pct": 0.3452,
+  "aged_units_first_day": 6910,
+  "aged_units_last_day": 2057,
+  "aged_inventory_reduction_pct": 0.7023,
+  "aged_units_cleared_pct_of_first_day_aged": 0.1492,
+  "bundle_rejections_by_reason": {
+    "INSUFFICIENT_STOCK": 25,
+    "DUPLICATE_ACTIVE_BUNDLE": 11
+  },
+  "stock_age_class_share": {
+    "FRESH": 0.5128,
+    "NORMAL": 0.1928,
+    "SLOW_MOVING": 0.1386,
+    "AGED": 0.121,
+    "NO_STOCK": 0.0348
+  },
+  "anomaly_counts": {
+    "PRICE_CHANGE_WITHOUT_REASON": 29,
+    "PRICE_BELOW_FLOOR": 19,
+    "PRICE_ABOVE_GRADIENT_CEILING": 15,
+    "STALE_OBSERVATION_AS_CURRENT": 6,
+    "PROMO_STACK_VIOLATION": 4,
+    "MARGIN_BEFORE_DISCOUNT": 3,
+    "BUNDLE_BELOW_MARGIN": 1
+  },
+  "detector_scores": {
+    "PRICE_BELOW_FLOOR": {
+      "injected": 19,
+      "detected": 19,
+      "true_pos": 19,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "PROMO_STACK_VIOLATION": {
+      "injected": 4,
+      "detected": 4,
+      "true_pos": 4,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "STALE_OBSERVATION_AS_CURRENT": {
+      "injected": 6,
+      "detected": 6,
+      "true_pos": 6,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "MARGIN_BEFORE_DISCOUNT": {
+      "injected": 3,
+      "detected": 3,
+      "true_pos": 3,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "PRICE_CHANGE_WITHOUT_REASON": {
+      "injected": 29,
+      "detected": 29,
+      "true_pos": 29,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "PRICE_ABOVE_GRADIENT_CEILING": {
+      "injected": 15,
+      "detected": 15,
+      "true_pos": 15,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "BUNDLE_BELOW_MARGIN": {
+      "injected": 1,
+      "detected": 1,
+      "true_pos": 1,
+      "false_pos": 0,
+      "false_neg": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    }
+  },
+  "eligibility_replay_agreement": 0.99491
+}
