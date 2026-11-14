@@ -95,7 +95,7 @@ by 2 of 4 anonymous competitor feeds per SKU; demand/elasticity parameters are i
 
 `data_full/` is about 890 MB (`seed.sql` alone is 546 MB), above GitHub's 100 MB per-file limit, so its large CSVs and `seed.sql` are git-ignored. The documentation, validation summary, metrics, ground truth and reproducibility report for the full set are committed. Regenerate the data in about 2 minutes with the command above (add `--sql` for `seed.sql`); the SHA-256 of every file is recorded in `data_full/reproducibility_report.json`. `data_starter/` is committed in full.
 
-## Pricing a new product (command line)
+## Inputs and Outputs
 
 `src/price_new_product.py` recommends a launch price for a product that is not in the dataset, using the same guardrails as the generator (margin floor, competitor band, stock signals, gradient ceiling, promotion checks) with category parameters taken from `data_starter`. Rules-based, deterministic, standard library only.
 
