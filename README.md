@@ -94,3 +94,13 @@ by 2 of 4 anonymous competitor feeds per SKU; demand/elasticity parameters are i
 ## Full dataset not included in the repository
 
 `data_full/` is about 890 MB (`seed.sql` alone is 546 MB), above GitHub's 100 MB per-file limit, so its large CSVs and `seed.sql` are git-ignored. The documentation, validation summary, metrics, ground truth and reproducibility report for the full set are committed. Regenerate the data in about 2 minutes with the command above (add `--sql` for `seed.sql`); the SHA-256 of every file is recorded in `data_full/reproducibility_report.json`. `data_starter/` is committed in full.
+
+## Pricing a new product (command line)
+
+`src/price_new_product.py` recommends a launch price for a product that is not in the dataset, using the same guardrails as the generator (margin floor, competitor band, stock signals, gradient ceiling, promotion checks) with category parameters taken from `data_starter`. Rules-based, deterministic, standard library only.
+
+```
+cd src
+python price_new_product.py --category Electronics --cost 40 --competitor-price 64.99 --competitor-age-days 2 --stock 300 --daily-demand 6 --promo-pct 0.10
+```
+Required: `--category`, `--cost`. Optional: `--name`, `--list-price`, `--competitor-price` (one or more), `--competitor-age-days`, `--stock`, `--daily-demand`, `--min-margin`, `--price-floor-abs`, `--price-ceiling`, `--promo-pct`, `--promo-min-margin-pct`, `--json`. The output shows the price, margin, floor/ceiling, the step-by-step reason trail, promotion result and exception flags.
