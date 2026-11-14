@@ -53,17 +53,50 @@ IDs: `SKU-000001`, `COST-SKU-000001-2026-04`, `PRC-SKU-000001-20260426`, `PROMO-
 `COBS-2026-…`, `ORD-2026-…`, `PRULE-2026-…`, `INV-<sku>-<yyyymmdd>`, `PEVT-<promo_id>-NN`, `LOT-<sku>-<yyyymmdd>`, `BNDL-2026-000001`, `BORD-2026-000001`.
 `Orders` ↔ `BundleOrder` reference each other, so those three FKs are `DEFERRABLE INITIALLY DEFERRED` in `schema.sql`.
 
-## Business logic (all in `rules_config.json` + `PromotionRule`)
+## How pricing works (business logic in plain words)
 
-* **Margin basis (consistent everywhere):** `margin = (net_price − unit_cost) / net_price`, net = base − all promo discounts, cost = CostRecord of the decision month.
-* **Guardrails:** `effective_floor = max(price_floor_abs, ceil_cent(cost / (1 − min_margin)))`; ceiling = `max(price_ceiling, floor)`; max ±10 % step per decision.
-* **5-year gradient rules (new):** `AnnualPriceHistory` holds 2021–2025 annual reference price/cost per SKU with year-over-year %; `PriceGradient` derives avg/CAGR/max/min/stdev (recomputed by the validator). Category and brand drive different trends (e.g. Electronics ≈ +1.9 %/yr, Grocery ≈ +3.9 %/yr). Rules: (1) **gradient ceiling** = `last_ref_price × (1 + max_yoy + 3 %)`, applied ceiling = `max(min(price_ceiling, gradient_ceiling), effective_floor)` so the margin floor always wins; (2) **gradient recovery** – with no competitor/stock signal (or inside the competitor band) a price more than 3 % below the expected gradient price moves back toward `min(gradient_ref_price, competitor price)`, only if the gain is ≥ 1 %; (3) **cost drift** follows each SKU's historical cost CAGR; (4) `list_price` and opening cost are consistent with the history. Each decision stores `gradient_ref_price`, `gradient_ceiling` and the flag `GRADIENT_CAPPED`.
-* **Decision policy (weekly review + off-cycle review on cost change):** low stock (cover < 5 d) → +4 % → fresh competitor (≤ 7 d, in stock) match/raise with ±3 %/7 % band → overstock (cover > 75 d) −5 % → hold (stale competitor / no signal) → cost pass-through when holding and cost moved. Each decision stores every input (cost, stock, demand, competitor obs + age, floor, ceiling) and a `reason_code`.
-* **Promotion stacking:** ≤ 2 promos, one per stack group, `EXCLUSIVE` rule blocks combining, `PromotionExclusion` pairs never co-apply, total discount ≤ 35 % of base, `MIN_STOCK_UNITS`, `MIN_MARGIN_PCT`, and net ≥ floor. Evaluated in a documented order; every candidate and its rejection reason is stored in `DecisionPromotion`, so eligibility is replayable (validator replays all of them).
-* **Inventory age (FIFO lots):** every receipt (plus the opening balance) is an `InventoryLot`; sales consume the oldest lot first. `InventorySnapshot` carries `oldest_stock_age_days`, `slow_moving_units` (61–90 d), `aged_units` (>90 d) and `stock_age_class` (FRESH 0–30, NORMAL 31–60, SLOW_MOVING 61–90, AGED >90, NO_STOCK). Thresholds are in `rules_config.json`; the validator replays FIFO from the lot table and must reproduce every snapshot value.
-* **Inventory-clearance bundles (separate from single-SKU pricing):** on weekly review days (after ≥ 7 days of history) the oldest SLOW_MOVING/AGED SKUs (≥ 5 aged/slow units, top 3 % of SKUs) are paired with a **high-demand complementary** SKU (30-day demand ≥ category 75th percentile and ≥ 0.5/day; category pairs from `bundle_complement_map`, add-on price ≤ 1.25 × main item, ≤ 3 bundles per primary per review). Rules, in rejection order: `COMPONENT_DISCONTINUED` → `INSUFFICIENT_STOCK` (sellable = on hand × (1 − 10 % reserve) must be ≥ 10 for both; bundle cap = the lower sellable stock) → `DUPLICATE_ACTIVE_BUNDLE` (same pair already accepted and still valid) → `BELOW_PRICE_FLOOR` (bundle price < sum of both effective floors) → `BELOW_MIN_MARGIN` (`(bundle_price − combined_cost)/bundle_price` < the stricter of both `min_margin_pct`). Price = `(A + B) × (1 − discount)`, discount 8 % / 12 % / 15 % by stock age (configurable, 5–15 %). Every evaluated candidate is stored in `ProductBundle`; rejected ones are `CANCELLED` with a `rejection_reason`. Accepted bundles are valid 14 days (`valid_from` = next day), then `EXPIRED`; only accepted bundles inside their window sell. Bundle sales are extra demand for **both** SKUs served from the same stock (they show up in `InventorySnapshot.units_sold`, FIFO consumption and `Orders`); the two `Orders` lines carry the allocated bundle price. Bundles never touch `PriceHistory`/`PriceDecision`, do not stack with promotions, and do not replace `MIN_STOCK_UNITS`/`MIN_MARGIN_PCT`.
-* **Demand/inventory:** Poisson demand with weekday/season effects, price elasticity vs market reference, promo uplift; (s,Q) replenishment with supplier disruptions → stockouts and lost sales. Orders reconcile exactly to `units_sold`.
-* **Derived values** (totals, margins, cover, lags, line totals, statuses) are computed from source records, not drawn independently.
+All the numbers below live in `rules_config.json` (exact formulas) and in the `PromotionRule` table. Nothing is hidden in the code.
+
+**1. Margin: how profit is measured.** Margin = (selling price - cost) / selling price. The selling price is the final price after all discounts, and the cost is the product's cost for that month. The same measure is used everywhere.
+
+**2. Price limits (guardrails).** Every price must stay inside a safe range:
+* **Lowest allowed price (floor):** never below the product's minimum price, and never so low that the minimum profit margin is lost. If both limits apply, the higher one wins.
+* **Highest allowed price (ceiling):** never above the product's maximum price.
+* **Small steps:** a price can change by at most 10% in one decision.
+
+**3. Five-year price history.** Each product has five years of past prices (2021-2025). From this we work out how fast its price normally rises each year.
+* **Cap on big jumps:** a price may not go above last year's price plus the biggest yearly rise seen before, plus 3%. The minimum-margin floor still comes first.
+* **Recovery:** if a price has fallen more than 3% below where its trend says it should be, and there is no competitor or stock reason for it, the price moves back up.
+* **Costs** also drift over time, following each product's own history.
+
+**4. How a price is decided.** Prices are reviewed every week, and also when the cost changes. The checks run in this order, and the first one that applies wins:
+1. **Stock is running out** (less than 5 days left): raise the price by 4%.
+2. **A recent competitor price** (7 days old or less, and the competitor has stock): match or raise the price, staying within about 3% above to 7% below the competitor.
+3. **Too much stock** (more than 75 days' worth): lower the price by 5%.
+4. **No useful information** (competitor data too old, or none): keep the price.
+5. **Cost changed while holding the price:** pass part of the cost change on to the price.
+
+Every decision saves what it looked at (cost, stock, demand, competitor price and its age, floor, ceiling) and a reason code, so any price can be explained later.
+
+**5. Promotions (coupons).** A product can have at most 2 promotions at once, and the rules are checked one by one:
+* only one promotion per promotion group;
+* an "exclusive" promotion cannot be combined with another;
+* some coupons are listed as conflicting pairs and never apply together;
+* the total discount cannot be more than 35% of the price;
+* the product needs enough stock, and the price after discount must stay above the floor and above the promotion's own minimum margin.
+
+Every promotion considered is saved as **APPLIED** or **REJECTED** with the reason (`DecisionPromotion`), so anyone can re-check why a coupon did or did not apply.
+
+**6. Old stock (inventory age).** Stock is sold oldest first. Each product is labelled by the age of its oldest unit: FRESH (0-30 days), NORMAL (31-60), SLOW_MOVING (61-90) or AGED (over 90 days). The thresholds are in `rules_config.json`.
+
+**7. Bundles to clear old stock.** This is separate from normal pricing. Once a week the slowest-selling old products are paired with a popular, matching product (for example Electronics with Office items).
+* **Price:** (price of item A + price of item B) x (1 - discount). The discount is 8%, 12% or 15% depending on how old the stock is.
+* **A bundle is rejected, with a reason, if:** an item is discontinued, there is not enough stock for both (10% is always kept back for normal sales), the same pair already has an active bundle, the price is below the two floors added together, or the profit margin is too low.
+* **Valid for 14 days,** then it expires. Bundles do not combine with promotions and do not change the normal price history.
+
+**8. Demand and stock.** Daily sales are random but realistic: they depend on the day of the week, the season, the price compared with the market, and promotions. Stock is refilled with a reorder rule, and supplier delays can cause stockouts and lost sales. Orders always add up exactly to the units sold.
+
+**9. Calculated, not guessed.** Totals, margins, days of stock and statuses are always calculated from the base records, never made up separately.
 
 ## Injected, labelled edge cases (ground truth only)
 
