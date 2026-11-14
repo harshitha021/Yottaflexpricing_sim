@@ -1,0 +1,5 @@
+product_name,category,unit_cost,recommended_price,reason_code,margin_pct,effective_floor,ceiling,min_margin_pct,guardrails_pass,flags,promo_status,promo_reject_reason,promo_net_price,promo_net_margin_pct
+Acme Earbuds,Electronics,40.0,64.67,COMP_MATCH,0.3815,46.52,69.22,0.14,True,,APPLIED,,58.2,0.3127
+Oat Biscuits 500g,Grocery,3.0,3.85,OVERSTOCK_MARKDOWN,0.2208,3.3,4.41,0.09,True,,,,,
+Yoga Mat,Sports,12.0,29.84,COMP_MATCH_DOWN,0.5979,14.46,32.01,0.17,True,,,,,
+Desk Lamp,Office,8.0,15.37,LOW_STOCK_MARKUP,0.4795,9.64,15.78,0.17,True,,,,,

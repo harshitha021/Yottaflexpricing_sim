@@ -115,3 +115,25 @@ CSV input (one product per row, same field names as column headers; empty cells 
 ```
 python price_new_product.py --input ../examples/new_products.csv --out-csv ../examples/results.csv
 ```
+
+### Screenshots
+
+**Command-line input**
+
+![Command-line input](docs/images/input_cli.png)
+
+![Command-line output](docs/images/output_cli.png)
+
+**JSON input**
+
+![JSON input](docs/images/input_json.png)
+
+![JSON output](docs/images/output_json.png)
+
+**CSV input (batch, with results written to a CSV file)**
+
+![CSV input](docs/images/input_csv.png)
+
+The batch prints one recommendation per product; the last of the four (Desk Lamp) is shown below.
+
+![CSV output](docs/images/output_csv.png)
