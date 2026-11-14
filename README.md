@@ -110,3 +110,8 @@ JSON input (one product or a batch) uses the same field names as the flags, with
 python price_new_product.py --input ../examples/new_product.json
 python price_new_product.py --input ../examples/new_products_batch.json --json    # list of products -> list of results
 ```
+
+CSV input (one product per row, same field names as column headers; empty cells are skipped; several competitor prices separated by `;`), with an optional results CSV:
+```
+python price_new_product.py --input ../examples/new_products.csv --out-csv ../examples/results.csv
+```

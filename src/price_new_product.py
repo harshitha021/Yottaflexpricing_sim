@@ -193,7 +193,8 @@ def render(o):
 
 def build_parser(categories):
     p = argparse.ArgumentParser(description="Recommend a price for a new product.")
-    p.add_argument("--input", help="JSON file with one product object or a list of them (same field names)")
+    p.add_argument("--input", help="JSON file (object or list) or CSV file (one product per row), same field names")
+    p.add_argument("--out-csv", help="also write the results to this CSV file")
     p.add_argument("--category", choices=categories)
     p.add_argument("--cost", type=float, help="unit cost (> 0)")
     p.add_argument("--name", default="", help="optional product name (label only)")
@@ -223,26 +224,80 @@ def main(argv=None):
     parser = build_parser(sorted(params))
     args = parser.parse_args(argv)
 
+    is_batch = False
     if args.input:
-        try:
-            with open(args.input, encoding="utf-8") as f:
-                data = json.load(f)
-        except (OSError, json.JSONDecodeError) as e:
-            parser.error(f"cannot read --input {args.input}: {e}")
-        items = data if isinstance(data, list) else [data]
+        if args.input.lower().endswith(".csv"):
+            items = read_csv_products(args.input, parser)
+            is_batch = True
+        else:
+            try:
+                with open(args.input, encoding="utf-8") as f:
+                    data = json.load(f)
+            except (OSError, json.JSONDecodeError) as e:
+                parser.error(f"cannot read --input {args.input}: {e}")
+            is_batch = isinstance(data, list)
+            items = data if is_batch else [data]
         if not items or not all(isinstance(x, dict) for x in items):
-            parser.error("--input must hold a JSON object or a non-empty list of objects")
-        products = [from_dict(x, parser, params, f"item {k}" if len(items) > 1 else "input")
+            parser.error("--input must hold a JSON object, a list of objects, or a CSV with at least one row")
+        products = [from_dict(x, parser, params, f"item {k}" if is_batch else "input")
                     for k, x in enumerate(items, 1)]
     else:
         check(args, parser.error, params)
         products = [args]
 
     outs = [recommend(a, params) for a in products]
-    if args.input and isinstance(data, list):
+    if args.out_csv:
+        write_results_csv(args.out_csv, outs, parser)
+    if is_batch:
         print(json.dumps(outs, indent=2) if args.json else ("\n" * 2).join(render(o) for o in outs))
     else:
         print(json.dumps(outs[0], indent=2) if args.json else render(outs[0]))
+
+
+def read_csv_products(path, parser):
+    """CSV rows -> dicts. Empty cells are skipped; competitor_price may hold several values separated by ';'."""
+    try:
+        with open(path, newline="", encoding="utf-8-sig") as f:
+            rows = list(csv.DictReader(f))
+    except OSError as e:
+        parser.error(f"cannot read --input {path}: {e}")
+    items = []
+    for n, row in enumerate(rows, 1):
+        d = {}
+        for k, v in row.items():
+            if k is None or v is None or not v.strip():
+                continue
+            k, v = k.strip().replace("-", "_"), v.strip()
+            if k in ("name", "category"):
+                d[k] = v
+                continue
+            try:
+                d[k] = [float(x) for x in v.split(";") if x.strip()] if k == "competitor_price" else float(v)
+            except ValueError:
+                parser.error(f"row {n}: field '{k}' must be a number, got '{v}'")
+        items.append(d)
+    return items
+
+
+RESULT_COLS = ["product_name", "category", "unit_cost", "recommended_price", "reason_code", "margin_pct",
+               "effective_floor", "ceiling", "min_margin_pct", "guardrails_pass", "flags",
+               "promo_status", "promo_reject_reason", "promo_net_price", "promo_net_margin_pct"]
+
+
+def write_results_csv(path, outs, parser):
+    try:
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=RESULT_COLS)
+            w.writeheader()
+            for o in outs:
+                p = o["promotion"] or {}
+                row = {k: o[k] for k in RESULT_COLS if k in o}
+                row["flags"] = ";".join(o["flags"])
+                row.update(promo_status=p.get("status", ""), promo_reject_reason=p.get("reject_reason") or "",
+                           promo_net_price=p.get("net_price", ""), promo_net_margin_pct=p.get("net_margin_pct", ""))
+                w.writerow(row)
+    except OSError as e:
+        parser.error(f"cannot write --out-csv {path}: {e}")
 
 
 FIELDS = {"name": "", "list_price": None, "competitor_price": None, "competitor_age_days": 0.0, "stock": None,

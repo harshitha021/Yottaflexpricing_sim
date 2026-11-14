@@ -1,0 +1,5 @@
+name,category,cost,list_price,competitor_price,competitor_age_days,stock,daily_demand,min_margin,promo_pct,promo_min_margin_pct
+Acme Earbuds,Electronics,40,,64.99;66.50,2,300,6,,0.10,0.20
+Oat Biscuits 500g,Grocery,3,,,,4000,40,,,
+Yoga Mat,Sports,12,39.99,29.99,1,,,,,
+Desk Lamp,Office,8,,,,2,5,,,
