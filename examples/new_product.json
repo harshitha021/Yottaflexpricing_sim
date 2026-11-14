@@ -6,6 +6,8 @@
   "competitor_age_days": 2,
   "stock": 300,
   "daily_demand": 6,
-  "promo_pct": 0.10,
+  "strategy": "balanced",
+  "price_ending": "99",
+  "promo_pct": [0.05, 0.10, 0.25],
   "promo_min_margin_pct": 0.2
 }

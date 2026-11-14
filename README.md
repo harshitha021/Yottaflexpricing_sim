@@ -12,7 +12,11 @@ rules and margin constraints. No external data, no personal data.
 | `src/bundles.py` | Inventory-age (FIFO) and bundle business rules as pure functions (used by generator, validator, tests) |
 | `src/validate.py` | Validation (190 checks), rule-based anomaly detectors, business metrics |
 | `src/reproduce.py` | Regenerates twice and compares row counts + SHA-256 |
+| `src/price_new_product.py` | Command-line tool: recommends a price for a new product (see *Inputs and Outputs*) |
 | `tests/test_bundles.py` | 19 unit + data tests for the bundling feature (`python -m unittest discover -s tests -v`) |
+| `tests/test_price_new_product.py` | 21 tests for the new-product pricing tool (same command runs all 40 tests) |
+| `examples/` | Sample JSON / CSV inputs and a results CSV for the new-product tool |
+| `docs/images/` | Input and output screenshots used in this README |
 | `data_full/` | 5,000 SKUs, 180 days, 2,000 promotions (CSV, ~350 MB) |
 | `data_starter/` | 500 SKUs, 60 days, 150 promotions (CSV + `seed.sql`, ~30 MB) |
 | `<data>/ground_truth/` | `ground_truth_anomalies.csv/.json`, `ground_truth_decisions.csv` – **never join into input features** |
@@ -98,6 +102,17 @@ Every promotion considered is saved as **APPLIED** or **REJECTED** with the reas
 
 **9. Calculated, not guessed.** Totals, margins, days of stock and statuses are always calculated from the base records, never made up separately.
 
+**10. Extra rules in the new-product pricing tool.** The command-line tool (see *Inputs and Outputs*) uses all the limits above and adds these checks. They only affect that tool, not the generated datasets.
+* **Suspect competitor price:** a competitor price that is less than half of our normal cost-plus price, or far from the other competitors' prices, is treated as a bad reading and ignored. It is flagged `SUSPECT_COMPETITOR_PRICE`.
+* **Launch strategy** (`--strategy`): `balanced` (default) uses the normal result; `penetration` prices closer to the floor to win customers; `skim` prices closer to the ceiling. The price always stays between the floor and the ceiling.
+* **Price endings** (`--price-ending 99` or `49`): the price is rounded to the nearest x.99 or x.49, but only if it still fits inside every limit.
+* **Wait before changing again:** when re-pricing an existing product (`--current-price`), a second change within 7 days is blocked unless stock is running out or the current price breaks a limit. Any change is also limited to 10% of the current price.
+* **Old-stock markdown:** if the oldest stock is more than 60 days old the price is lowered 5%, and more than 90 days old 10% (`--stock-age-days`).
+* **Price options table:** it shows the floor price, the recommended price and the competitor-matching price side by side, with margin, estimated daily sales and estimated daily profit. The sales estimates use an assumed price sensitivity for each category (`--elasticity` to change it), so treat them as a guide, not a forecast. The recommended price itself is still set by the rules, not by this table.
+* **Best promotion:** you can test several discounts at once (`--promo-pct 0.05 0.10 0.25`). Each one is checked against the promotion rules above, and the best one that passes is marked as chosen. If every allowed discount is estimated to earn less than the full price, the tool says so.
+* **Similar products:** the new price-to-cost ratio is compared with the 10 existing products in the same category with the closest cost. A price outside their range is flagged `PRICE_OUTLIER_VS_SIMILAR`.
+* **Confidence:** HIGH when both a fresh competitor price and stock/demand figures were given, MEDIUM when only one was, LOW when neither was.
+
 ## Injected, labelled edge cases (ground truth only)
 
 Baseline records are produced first; anomalies are produced by perturbing the documented computation at decision time, so downstream
@@ -136,7 +151,7 @@ by 2 of 4 anonymous competitor feeds per SKU; demand/elasticity parameters are i
 cd src
 python price_new_product.py --category Electronics --cost 40 --competitor-price 64.99 --competitor-age-days 2 --stock 300 --daily-demand 6 --promo-pct 0.10
 ```
-Required: `--category`, `--cost`. Optional: `--name`, `--list-price`, `--competitor-price` (one or more), `--competitor-age-days`, `--stock`, `--daily-demand`, `--min-margin`, `--price-floor-abs`, `--price-ceiling`, `--promo-pct`, `--promo-min-margin-pct`, `--json`. The output shows the price, margin, floor/ceiling, the step-by-step reason trail, promotion result and exception flags.
+Required: `--category`, `--cost`. Optional: `--name`, `--list-price`, `--competitor-price` (one or more), `--competitor-age-days`, `--stock`, `--daily-demand`, `--stock-age-days`, `--strategy` (balanced / penetration / skim), `--price-ending` (99 / 49), `--current-price`, `--days-since-change`, `--elasticity`, `--min-margin`, `--price-floor-abs`, `--price-ceiling`, `--promo-pct` (one or more), `--promo-min-margin-pct`, `--json`. The output shows the price, margin, confidence, floor/ceiling, the step-by-step reason trail, a price options table, a similar-products check, the promotion result and exception flags.
 
 JSON input (one product or a batch) uses the same field names as the flags, with underscores (`list_price`, `competitor_price`, ...):
 ```

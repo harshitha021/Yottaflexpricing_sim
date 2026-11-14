@@ -1,5 +1,6 @@
-product_name,category,unit_cost,recommended_price,reason_code,margin_pct,effective_floor,ceiling,min_margin_pct,guardrails_pass,flags,promo_status,promo_reject_reason,promo_net_price,promo_net_margin_pct
-Acme Earbuds,Electronics,40.0,64.67,COMP_MATCH,0.3815,46.52,69.22,0.14,True,,APPLIED,,58.2,0.3127
-Oat Biscuits 500g,Grocery,3.0,3.85,OVERSTOCK_MARKDOWN,0.2208,3.3,4.41,0.09,True,,,,,
-Yoga Mat,Sports,12.0,29.84,COMP_MATCH_DOWN,0.5979,14.46,32.01,0.17,True,,,,,
-Desk Lamp,Office,8.0,15.37,LOW_STOCK_MARKUP,0.4795,9.64,15.78,0.17,True,,,,,
+product_name,category,unit_cost,recommended_price,reason_code,margin_pct,effective_floor,ceiling,min_margin_pct,guardrails_pass,confidence,strategy,flags,highest_estimated_profit_option,similar_within_range,promo_status,promo_reject_reason,promo_net_price,promo_net_margin_pct
+Acme Earbuds,Electronics,40.0,64.99,COMP_MATCH,0.3845,46.52,69.22,0.14,True,HIGH,balanced,,Recommended,True,APPLIED,,61.74,0.3521
+Oat Biscuits 500g,Grocery,3.0,4.13,OVERSTOCK_MARKDOWN,0.2736,3.3,4.41,0.09,True,MEDIUM,skim,STRATEGY_SKIM,Recommended,True,,,,
+Yoga Mat,Sports,12.0,19.84,COMP_MATCH_DOWN,0.3952,14.46,32.01,0.17,True,MEDIUM,penetration,STRATEGY_PENETRATION,Competitor match,True,,,,
+Desk Lamp,Office,8.0,15.37,LOW_STOCK_MARKUP,0.4795,9.64,15.78,0.17,True,MEDIUM,balanced,,Recommended,True,,,,
+Old Stock Jacket,Apparel,25.0,43.19,AGED_STOCK_MARKDOWN,0.4212,31.25,51.89,0.2,True,LOW,balanced,NO_COMPETITOR_DATA,Cost-plus start,True,,,,

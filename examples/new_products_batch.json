@@ -1,5 +1,7 @@
 [
-  {"name": "Acme Earbuds", "category": "Electronics", "cost": 40, "competitor_price": 64.99, "competitor_age_days": 2},
+  {"name": "Acme Earbuds", "category": "Electronics", "cost": 40, "competitor_price": [64.99, 66.5], "competitor_age_days": 2, "stock": 300, "daily_demand": 6},
   {"name": "Oat Biscuits 500g", "category": "Grocery", "cost": 3, "stock": 4000, "daily_demand": 40},
-  {"name": "Yoga Mat", "category": "Sports", "cost": 12, "list_price": 39.99, "competitor_price": 29.99, "competitor_age_days": 1}
+  {"name": "Yoga Mat", "category": "Sports", "cost": 12, "list_price": 39.99, "competitor_price": 29.99, "competitor_age_days": 1, "strategy": "penetration"},
+  {"name": "Desk Lamp (suspect feed)", "category": "Office", "cost": 8, "competitor_price": 2.5, "competitor_age_days": 1},
+  {"name": "Old Stock Jacket", "category": "Apparel", "cost": 25, "stock_age_days": 120, "strategy": "balanced"}
 ]
