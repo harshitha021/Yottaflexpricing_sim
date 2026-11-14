@@ -1,0 +1,11 @@
+{
+  "name": "Acme Earbuds",
+  "category": "Electronics",
+  "cost": 40,
+  "competitor_price": [64.99, 66.5],
+  "competitor_age_days": 2,
+  "stock": 300,
+  "daily_demand": 6,
+  "promo_pct": 0.10,
+  "promo_min_margin_pct": 0.2
+}

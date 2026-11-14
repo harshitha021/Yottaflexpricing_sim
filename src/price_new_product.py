@@ -193,8 +193,9 @@ def render(o):
 
 def build_parser(categories):
     p = argparse.ArgumentParser(description="Recommend a price for a new product.")
-    p.add_argument("--category", required=True, choices=categories)
-    p.add_argument("--cost", required=True, type=float, help="unit cost (> 0)")
+    p.add_argument("--input", help="JSON file with one product object or a list of them (same field names)")
+    p.add_argument("--category", choices=categories)
+    p.add_argument("--cost", type=float, help="unit cost (> 0)")
     p.add_argument("--name", default="", help="optional product name (label only)")
     p.add_argument("--list-price", type=float, help="intended list price; otherwise category cost-plus")
     p.add_argument("--competitor-price", type=float, nargs="+", help="one or more observed competitor prices")
@@ -220,31 +221,83 @@ def main(argv=None):
     except FileNotFoundError as e:
         sys.exit(f"error: dataset file not found ({e.filename}); use --data-dir")
     parser = build_parser(sorted(params))
-    a = parser.parse_args(argv)
+    args = parser.parse_args(argv)
 
-    def bad(msg):
-        parser.error(msg)
+    if args.input:
+        try:
+            with open(args.input, encoding="utf-8") as f:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError) as e:
+            parser.error(f"cannot read --input {args.input}: {e}")
+        items = data if isinstance(data, list) else [data]
+        if not items or not all(isinstance(x, dict) for x in items):
+            parser.error("--input must hold a JSON object or a non-empty list of objects")
+        products = [from_dict(x, parser, params, f"item {k}" if len(items) > 1 else "input")
+                    for k, x in enumerate(items, 1)]
+    else:
+        check(args, parser.error, params)
+        products = [args]
+
+    outs = [recommend(a, params) for a in products]
+    if args.input and isinstance(data, list):
+        print(json.dumps(outs, indent=2) if args.json else ("\n" * 2).join(render(o) for o in outs))
+    else:
+        print(json.dumps(outs[0], indent=2) if args.json else render(outs[0]))
+
+
+FIELDS = {"name": "", "list_price": None, "competitor_price": None, "competitor_age_days": 0.0, "stock": None,
+          "daily_demand": None, "min_margin": None, "price_floor_abs": None, "price_ceiling": None,
+          "promo_pct": None, "promo_min_margin_pct": None}
+
+
+def from_dict(d, parser, params, where):
+    """Build an argument-like object from a JSON dict (snake_case or kebab-case keys)."""
+    d = {k.replace("-", "_"): v for k, v in d.items()}
+    unknown = set(d) - set(FIELDS) - {"category", "cost"}
+    if unknown:
+        parser.error(f"{where}: unknown field(s): {', '.join(sorted(unknown))}")
+    vals = dict(FIELDS, **d)
+    vals["category"], vals["cost"] = d.get("category"), d.get("cost")
+    cp = vals["competitor_price"]
+    if isinstance(cp, (int, float)) and not isinstance(cp, bool):
+        vals["competitor_price"] = [cp]
+    for k, v in vals.items():
+        if k in ("name", "category"):
+            continue
+        items = v if isinstance(v, list) else [v]
+        if any(x is not None and (isinstance(x, bool) or not isinstance(x, (int, float))) for x in items):
+            parser.error(f"{where}: field '{k}' must be a number")
+    ns = argparse.Namespace(**vals)
+    ns.cost = None if ns.cost is None else float(ns.cost)
+    check(ns, lambda m: parser.error(f"{where}: {m}"), params)
+    return ns
+
+
+def check(a, bad, params):
+    if a.category is None:
+        bad("category is required")
+    if a.category not in params:
+        bad(f"invalid category '{a.category}' (choose from {', '.join(sorted(params))})")
+    if a.cost is None:
+        bad("cost is required")
     if a.cost <= 0:
-        bad("--cost must be > 0")
+        bad("cost must be > 0")
     for n in ("list_price", "price_floor_abs", "price_ceiling"):
         v = getattr(a, n)
         if v is not None and v <= 0:
-            bad(f"--{n.replace('_', '-')} must be > 0")
+            bad(f"{n} must be > 0")
     if a.competitor_price and any(x <= 0 for x in a.competitor_price):
-        bad("--competitor-price values must be > 0")
+        bad("competitor_price values must be > 0")
     if a.competitor_age_days < 0:
-        bad("--competitor-age-days must be >= 0")
+        bad("competitor_age_days must be >= 0")
     if a.stock is not None and a.stock < 0:
-        bad("--stock must be >= 0")
+        bad("stock must be >= 0")
     if a.daily_demand is not None and a.daily_demand < 0:
-        bad("--daily-demand must be >= 0")
+        bad("daily_demand must be >= 0")
     for n in ("min_margin", "promo_pct", "promo_min_margin_pct"):
         v = getattr(a, n)
         if v is not None and not 0 < v < 1:
-            bad(f"--{n.replace('_', '-')} must be between 0 and 1 (e.g. 0.2)")
-
-    out = recommend(a, params)
-    print(json.dumps(out, indent=2) if a.json else render(out))
+            bad(f"{n} must be between 0 and 1 (e.g. 0.2)")
 
 
 if __name__ == "__main__":

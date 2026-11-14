@@ -1,0 +1,5 @@
+[
+  {"name": "Acme Earbuds", "category": "Electronics", "cost": 40, "competitor_price": 64.99, "competitor_age_days": 2},
+  {"name": "Oat Biscuits 500g", "category": "Grocery", "cost": 3, "stock": 4000, "daily_demand": 40},
+  {"name": "Yoga Mat", "category": "Sports", "cost": 12, "list_price": 39.99, "competitor_price": 29.99, "competitor_age_days": 1}
+]

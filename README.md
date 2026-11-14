@@ -104,3 +104,9 @@ cd src
 python price_new_product.py --category Electronics --cost 40 --competitor-price 64.99 --competitor-age-days 2 --stock 300 --daily-demand 6 --promo-pct 0.10
 ```
 Required: `--category`, `--cost`. Optional: `--name`, `--list-price`, `--competitor-price` (one or more), `--competitor-age-days`, `--stock`, `--daily-demand`, `--min-margin`, `--price-floor-abs`, `--price-ceiling`, `--promo-pct`, `--promo-min-margin-pct`, `--json`. The output shows the price, margin, floor/ceiling, the step-by-step reason trail, promotion result and exception flags.
+
+JSON input (one product or a batch) uses the same field names as the flags, with underscores (`list_price`, `competitor_price`, ...):
+```
+python price_new_product.py --input ../examples/new_product.json
+python price_new_product.py --input ../examples/new_products_batch.json --json    # list of products -> list of results
+```
